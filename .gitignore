@@ -216,3 +216,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Specs
+.spec
+
+# --- Proyecto: artefactos generados ------------------------------------------
+# Salidas del pipeline (datos.jsonl, KPIs, reportes, artefactos del cliente HTTP).
+out/
+# Base(s) de datos locales del ETL (las genera el usuario en la parte de Pentaho).
+*.sqlite
+*.sqlite3
+*.db

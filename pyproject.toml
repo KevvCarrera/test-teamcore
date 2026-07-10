@@ -1,0 +1,103 @@
+# Empaquetado y configuración de tooling del proyecto.
+# Las decisiones aquí codificadas se justifican en:
+#   docs/adr/0002-runtime-python-and-packaging.md
+#   docs/adr/0011-testing-strategy-and-tooling.md
+#   docs/adr/0012-dependency-boundary-allowed-libraries.md
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "teamcore-http-kpi"
+version = "0.1.0"
+description = "Cliente HTTP automatizado, cálculo de KPIs y reporte HTML (test técnico Teamcore)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "Equipo de Ingeniería" }]
+
+# --- Dependencias de runtime -------------------------------------------------
+# Estrictamente dentro de la frontera de librerías permitidas por el enunciado.
+# selenium / playwright están permitidas pero NO se usan (ver ADR-0004).
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.1",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+# Herramientas de desarrollo (no forman parte del runtime entregable).
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "responses>=0.25",     # dobles HTTP para probar el cliente sin red real
+    "ruff>=0.4",
+    "mypy>=1.9",
+    "types-requests>=2.31",
+]
+
+# Puntos de entrada de consola (además de los scripts raíz que exige el enunciado).
+[project.scripts]
+cliente-http = "teamcore_http_kpi.cli.cliente_http:main"
+generar-datos = "teamcore_http_kpi.cli.generar_datos:main"
+calcular-kpi = "teamcore_http_kpi.cli.calcular_kpi:main"
+generar-reporte = "teamcore_http_kpi.cli.generar_reporte:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# --- Ruff (lint + formato) ---------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Reglas: errores (E,F), imports (I), bugbear (B), comprehensions (C4),
+# pyupgrade (UP), naming (N), simplify (SIM), pathlib (PTH).
+select = ["E", "F", "I", "B", "C4", "UP", "N", "SIM", "PTH"]
+ignore = []
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# --- Mypy (tipado estricto) --------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+pretty = true
+files = ["src", "tests"]
+
+# pandas/matplotlib no exponen stubs completos: se aíslan sin relajar el resto.
+[[tool.mypy.overrides]]
+module = ["matplotlib.*", "pandas.*"]
+ignore_missing_imports = true
+
+# --- Pytest ------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra -q --strict-markers -m 'not network'"
+markers = [
+    "unit: pruebas unitarias puras (sin E/S ni red)",
+    "integration: pruebas de integración con ficheros temporales o dobles HTTP",
+    "e2e: pruebas de extremo a extremo sobre las CLIs",
+    "network: requieren red real contra httpbin.org (excluidas por defecto)",
+]
+
+[tool.coverage.run]
+source = ["teamcore_http_kpi"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
