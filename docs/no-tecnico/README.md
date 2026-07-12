@@ -19,12 +19,15 @@ revisa y se corrige en el mismo cambio.
 1. **[01-estructura-del-proyecto.md](01-estructura-del-proyecto.md)** — qué es
    cada carpeta del repositorio y por qué existe.
 2. **[02-codigo-explicado.md](02-codigo-explicado.md)** — qué hace, línea por
-   línea, cada archivo de código que ya tiene contenido real.
+   línea, cada archivo de código de la Fase 2 (scaffolding).
+3. **[03-dominio-explicado.md](03-dominio-explicado.md)** — las reglas de
+   negocio de la Fase 3: el árbol de errores, las "fichas" de datos, la
+   normalización de endpoints, el percentil 90 y la generación de datos de
+   ejemplo.
 
 Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
-documentos numerados aquí (por ejemplo, `03-...` para explicar la lógica de
-negocio de la Fase 3, `04-...` para los conectores de la Fase 4, etc.), cada
-uno enlazado desde este índice.
+documentos numerados aquí (por ejemplo, `04-...` para los conectores de la
+Fase 4, `05-...` para las CLIs, etc.), cada uno enlazado desde este índice.
 
 ## Qué NO vas a encontrar aquí
 

@@ -6,6 +6,23 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 3 — Dominio (TDD)**: lógica de negocio pura, sin red ni E/S, con
+  cobertura de pruebas del 100 %.
+  - `domain/models.py`: `BitacoraRecord`, `KpiRow`, `GlobalMetrics`.
+  - `domain/endpoints.py`: `normalize_endpoint` — normalización de rutas para
+    agrupar KPIs (FR-10), documentada con la regla y ejemplos (NFR-05).
+  - `domain/kpi.py`: `percentile_90` (vía `numpy.percentile`, documentado) y
+    `aggregate` — conteos por rango de estado, promedio y p90 por
+    `(date_utc, endpoint_base)`, con orden determinista.
+  - `domain/generation.py`: `generate_records` — genera la bitácora sintética
+    con todas las reglas del enunciado (catálogo de endpoints, status por
+    endpoint, latencia 50–800 ms, ~5 % de errores de parseo), determinista por
+    `seed` + `ref_utc`.
+  - `domain/errors.py`: jerarquía completa de excepciones (`TeamcoreError` y
+    subtipos) para el manejo de errores del resto del sistema.
+  - 44 pruebas unitarias nuevas (normalización, percentil, agregación,
+    generación, jerarquía de errores); `make check` en verde.
+
 - **Fase 2 — Scaffolding del paquete**: árbol completo `src/teamcore_http_kpi/`
   (capas `domain`, `application`, `infrastructure`, `cli`) con módulos tipados
   vacíos, listos para recibir la lógica de negocio en las fases siguientes.
