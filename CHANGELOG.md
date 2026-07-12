@@ -6,6 +6,21 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 6 — Cliente HTTP (Parte 0)**: los 6 escenarios contra
+  `httpbin.org` ya funcionan de punta a punta con `python cliente_http.py`
+  (sin parámetros, tal como pide el enunciado).
+  - `infrastructure/http/tasks.py`: auth básica, cookies/sesión, 403 (se
+    detecta y maneja correctamente tras agotar los reintentos), extracción
+    JSON/XML/HTML, envío de formulario y redirección.
+  - `application/http_scenarios.py`: `run_all` ejecuta los 6 sobre la misma
+    sesión; el fallo de uno no impide que se ejecuten los demás.
+  - `application/ports.py`: se corrigió `HttpResponse` (propiedades de solo
+    lectura + `content: bytes`) para que un `requests.Response` real
+    conforme el puerto sin envoltorios adicionales.
+  - 26 pruebas nuevas: los 6 escenarios con dobles (`responses`), la
+    orquestación, y un e2e completo de la CLI.
+  - Verificado además contra `httpbin.org` real.
+
 - **Fase 5 — Aplicación y CLI de datos**: los dos primeros comandos del
   enunciado ya funcionan de punta a punta, tal como se piden literalmente.
   - `generar_datos.py --n_registros 500 --salida out/datos.jsonl --seed 42`
@@ -97,6 +112,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   línea con `FR-xx`/`NFR-xx`). No cambia ninguna lógica ni comportamiento.
 
 ### Corregido
+- **Bug encontrado probando en vivo contra `httpbin.org`**: cuando un error
+  5xx persistía tras agotar los reintentos, `RequestsHttpClient` devolvía la
+  respuesta cruda en vez de avisar con `HttpTaskError` — un escenario con un
+  503 sostenido terminaba tumbando toda la CLI con un traceback sin
+  controlar, en vez de marcarse como fallido y dejar correr a los demás.
+  Corregido con una prueba de regresión.
 - Acotado el rango de `numpy` en `pyproject.toml` a `>=1.26,<2.3`: a partir de
   `numpy==2.3` los stubs usan sintaxis PEP 695, incompatible con
   `mypy --strict` bajo `python_version = "3.11"` (NFR-01).
@@ -117,6 +138,5 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   validación funcional de PDI la realiza el usuario en su instalación.
 
 ### Pendiente
-- Fases 3–10: dominio, infraestructura, CLIs, cliente HTTP, reporte, ETL PDI,
-  verificación y cierre documental (ver
+- Fases 7–10: reporte HTML, ETL PDI, verificación y cierre documental (ver
   [roadmap-and-phases.md](docs/project-plan/roadmap-and-phases.md)).

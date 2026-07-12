@@ -102,6 +102,11 @@ class RequestsHttpClient:
             raise AccessForbiddenError(
                 f"Acceso denegado (403) en {method} {path} tras agotar los reintentos"
             )
+        if last_response.status_code in _RETRYABLE_SERVER_STATUS:
+            raise HttpTaskError(
+                f"Estado {last_response.status_code} persistente en {method} {path} "
+                "tras agotar los reintentos"
+            )
         return last_response
 
     def _should_retry(self, status_code: int) -> bool:

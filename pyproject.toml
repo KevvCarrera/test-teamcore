@@ -37,6 +37,7 @@ dev = [
     "ruff>=0.4",
     "mypy>=1.9",
     "types-requests>=2.31",
+    "lxml-stubs>=0.5",
 ]
 
 # Puntos de entrada de consola (además de los scripts raíz que exige el enunciado).

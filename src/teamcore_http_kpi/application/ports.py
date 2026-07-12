@@ -14,12 +14,23 @@ from teamcore_http_kpi.domain.models import BitacoraRecord, GlobalMetrics, KpiRo
 
 
 class HttpResponse(Protocol):
-    """Lo mínimo que necesitamos de una respuesta HTTP, sin atarnos a `requests`."""
+    """Lo mínimo que necesitamos de una respuesta HTTP, sin atarnos a `requests`.
+
+    `text`, `content`, `headers` e `history` se declaran como propiedades de
+    solo lectura porque así son en `requests.Response`: si se declararan como
+    atributos simples, mypy exigiría que también fueran modificables, y
+    `Response` dejaría de conformar este puerto.
+    """
 
     status_code: int
-    text: str
 
     def json(self) -> Any: ...
+
+    @property
+    def text(self) -> str: ...
+
+    @property
+    def content(self) -> bytes: ...
 
     @property
     def headers(self) -> Mapping[str, str]: ...

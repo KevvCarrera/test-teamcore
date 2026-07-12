@@ -144,6 +144,22 @@ def test_server_error_is_retried_then_succeeds() -> None:
 
 @pytest.mark.integration
 @responses.activate
+def test_persistent_server_error_raises_http_task_error_after_retries() -> None:
+    """Encontrado al probar contra httpbin.org real: un 503 persistente no debe
+    devolverse como si nada tras agotar los reintentos; debe avisar con
+    HttpTaskError para que la capa de aplicación lo marque como fallido.
+    """
+    for _ in range(4):  # 1 intento + 3 reintentos
+        responses.add(responses.GET, f"{_BASE_URL}/get", status=503)
+
+    with pytest.raises(HttpTaskError):
+        _client(max_retries=3).get("/get")
+
+    assert len(responses.calls) == 4
+
+
+@pytest.mark.integration
+@responses.activate
 def test_connection_error_retried_then_raises_http_task_error() -> None:
     for _ in range(4):
         responses.add(

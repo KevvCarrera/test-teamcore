@@ -31,10 +31,13 @@ revisa y se corrige en el mismo cambio.
 5. **[05-cli-de-datos-explicada.md](05-cli-de-datos-explicada.md)** — la
    Fase 5: cómo quedaron conectados de punta a punta `generar_datos.py` y
    `calcular_kpi.py`, y qué son los "golden files".
+6. **[06-cliente-http-explicado.md](06-cliente-http-explicado.md)** — la
+   Fase 6: los 6 escenarios contra `httpbin.org`, cómo se comportan entre sí,
+   y un bug real que se encontró y corrigió probando contra el sitio en vivo.
 
 Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
-documentos numerados aquí (por ejemplo, `06-...` para el cliente HTTP en
-vivo), cada uno enlazado desde este índice.
+documentos numerados aquí (por ejemplo, `07-...` para el reporte HTML), cada
+uno enlazado desde este índice.
 
 ## Qué NO vas a encontrar aquí
 
