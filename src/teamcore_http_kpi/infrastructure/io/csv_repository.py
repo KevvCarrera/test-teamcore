@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from datetime import date
 from pathlib import Path
 
-from teamcore_http_kpi.domain.errors import InputFileNotFoundError
+from teamcore_http_kpi.domain.errors import DataInputError, InputFileNotFoundError
 from teamcore_http_kpi.domain.models import KpiRow
 
 _FIELDNAMES = (
@@ -62,14 +62,22 @@ def _to_payload(row: KpiRow) -> dict[str, str]:
 
 
 def _from_payload(record: dict[str, str]) -> KpiRow:
-    return KpiRow(
-        date_utc=date.fromisoformat(record["date_utc"]),
-        endpoint_base=record["endpoint_base"],
-        requests_total=int(record["requests_total"]),
-        success_2xx=int(record["success_2xx"]),
-        client_4xx=int(record["client_4xx"]),
-        server_5xx=int(record["server_5xx"]),
-        parse_errors=int(record["parse_errors"]),
-        avg_elapsed_ms=float(record["avg_elapsed_ms"]),
-        p90_elapsed_ms=float(record["p90_elapsed_ms"]),
-    )
+    # record.get(...) is None cubre tanto la columna ausente del encabezado
+    # como una fila con menos valores que columnas (DictReader la rellena con None).
+    missing = [field for field in _FIELDNAMES if record.get(field) is None]
+    if missing:
+        raise DataInputError(f"Falta(n) columna(s) del contrato en el CSV de KPIs: {missing}")
+    try:
+        return KpiRow(
+            date_utc=date.fromisoformat(record["date_utc"]),
+            endpoint_base=record["endpoint_base"],
+            requests_total=int(record["requests_total"]),
+            success_2xx=int(record["success_2xx"]),
+            client_4xx=int(record["client_4xx"]),
+            server_5xx=int(record["server_5xx"]),
+            parse_errors=int(record["parse_errors"]),
+            avg_elapsed_ms=float(record["avg_elapsed_ms"]),
+            p90_elapsed_ms=float(record["p90_elapsed_ms"]),
+        )
+    except ValueError as exc:
+        raise DataInputError(f"Valor inválido en el CSV de KPIs: {exc}") from exc

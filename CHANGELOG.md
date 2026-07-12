@@ -6,6 +6,17 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 7 — Reporte HTML (Parte 3)**: el tercer comando del enunciado ya
+  funciona de punta a punta.
+  - `application/build_report.py`: orquesta métricas globales, gráficos y
+    HTML (reutiliza `charts.py`/`html_report.py` de la Fase 4, sin cambios).
+  - CLI `generar_reporte.py --input ... --output ... --umbral_p90 300`.
+  - 12 pruebas e2e nuevas: secciones del reporte, alerta por umbral,
+    HTML autocontenido, idempotencia, errores de datos/configuración.
+  - Verificado manualmente el pipeline completo (`generar_datos` →
+    `calcular_kpi` → `generar_reporte`) con los comandos exactos del
+    enunciado; HTML inspeccionado y correcto.
+
 - **Adaptador Selenium real** (no contemplado en el plan original; agregado
   a pedido explícito, ver [ADR-0014](docs/adr/0014-selenium-adapter-as-alternative.md)):
   demuestra un uso genuino de Selenium, permitido por el enunciado, sin
@@ -133,6 +144,10 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   línea con `FR-xx`/`NFR-xx`). No cambia ninguna lógica ni comportamiento.
 
 ### Corregido
+- **`CsvKpiRepository` no traducía columnas faltantes o valores inválidos a
+  `DataInputError`** (dejaba propagar `KeyError`/`ValueError` crudos), algo
+  que `SPEC-004` exige explícitamente para el reporte HTML. Corregido con
+  pruebas de regresión.
 - **Bug encontrado probando en vivo contra `httpbin.org`**: cuando un error
   5xx persistía tras agotar los reintentos, `RequestsHttpClient` devolvía la
   respuesta cruda en vez de avisar con `HttpTaskError` — un escenario con un
@@ -159,5 +174,5 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   validación funcional de PDI la realiza el usuario en su instalación.
 
 ### Pendiente
-- Fases 7–10: reporte HTML, ETL PDI, verificación y cierre documental (ver
+- Fases 8–10: ETL PDI, verificación y cierre documental (ver
   [roadmap-and-phases.md](docs/project-plan/roadmap-and-phases.md)).

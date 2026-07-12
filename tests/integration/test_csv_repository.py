@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from teamcore_http_kpi.domain.errors import InputFileNotFoundError
+from teamcore_http_kpi.domain.errors import DataInputError, InputFileNotFoundError
 from teamcore_http_kpi.domain.models import KpiRow
 from teamcore_http_kpi.infrastructure.io.csv_repository import CsvKpiRepository
 
@@ -68,3 +68,25 @@ def test_write_truncates_existing_file(tmp_out: Path) -> None:
 def test_read_raises_when_file_missing(tmp_out: Path) -> None:
     with pytest.raises(InputFileNotFoundError):
         CsvKpiRepository().read(tmp_out / "no-existe.csv")
+
+
+@pytest.mark.integration
+def test_read_raises_data_input_error_when_column_missing(tmp_out: Path) -> None:
+    destination = tmp_out / "kpi.csv"
+    destination.write_text("date_utc,endpoint_base,requests_total\n2026-07-09,/get,42\n", "utf-8")
+
+    with pytest.raises(DataInputError):
+        CsvKpiRepository().read(destination)
+
+
+@pytest.mark.integration
+def test_read_raises_data_input_error_on_invalid_value(tmp_out: Path) -> None:
+    destination = tmp_out / "kpi.csv"
+    header = (
+        "date_utc,endpoint_base,requests_total,success_2xx,client_4xx,"
+        "server_5xx,parse_errors,avg_elapsed_ms,p90_elapsed_ms\n"
+    )
+    destination.write_text(header + "2026-07-09,/get,no-es-un-numero,0,0,0,0,1.0,2.0\n", "utf-8")
+
+    with pytest.raises(DataInputError):
+        CsvKpiRepository().read(destination)

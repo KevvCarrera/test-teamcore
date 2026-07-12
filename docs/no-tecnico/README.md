@@ -38,10 +38,13 @@ revisa y se corrige en el mismo cambio.
    una unidad no planificada originalmente: un segundo "mensajero" basado en
    un navegador Chrome real (Selenium), agregado a pedido explícito, sin
    tocar el que ya funcionaba.
+8. **[07-reporte-explicado.md](07-reporte-explicado.md)** — la Fase 7: el
+   reporte HTML final, y un problema real que se encontró y corrigió al
+   conectar las piezas.
 
 Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
-documentos numerados aquí (por ejemplo, `07-...` para el reporte HTML), cada
-uno enlazado desde este índice.
+documentos numerados aquí (por ejemplo, `08-...` para el ETL de Pentaho),
+cada uno enlazado desde este índice.
 
 ## Qué NO vas a encontrar aquí
 
