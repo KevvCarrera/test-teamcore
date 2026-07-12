@@ -28,11 +28,13 @@ revisa y se corrige en el mismo cambio.
    los "conectores" de la Fase 4: lectura/escritura de archivos, el mensajero
    HTTP con reglas de reintento, y quién dibuja los gráficos y arma el
    reporte final.
+5. **[05-cli-de-datos-explicada.md](05-cli-de-datos-explicada.md)** — la
+   Fase 5: cómo quedaron conectados de punta a punta `generar_datos.py` y
+   `calcular_kpi.py`, y qué son los "golden files".
 
 Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
-documentos numerados aquí (por ejemplo, `05-...` para las CLIs de datos,
-`06-...` para el cliente HTTP en vivo, etc.), cada uno enlazado desde este
-índice.
+documentos numerados aquí (por ejemplo, `06-...` para el cliente HTTP en
+vivo), cada uno enlazado desde este índice.
 
 ## Qué NO vas a encontrar aquí
 

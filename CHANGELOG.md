@@ -6,6 +6,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 5 — Aplicación y CLI de datos**: los dos primeros comandos del
+  enunciado ya funcionan de punta a punta, tal como se piden literalmente.
+  - `generar_datos.py --n_registros 500 --salida out/datos.jsonl --seed 42`
+    genera la bitácora sintética.
+  - `calcular_kpi.py --input out/datos.jsonl --output out/kpi_por_endpoint_dia.csv`
+    calcula el CSV de KPIs.
+  - Manejo de errores: `--n_registros <= 0` termina con código 2; archivo de
+    entrada inexistente o sin ningún registro válido termina con código 1
+    (sin generar un CSV vacío en silencio); fallo de escritura también
+    código 1.
+  - Golden files versionados en `tests/data/` (`bitacora_min.jsonl`,
+    `kpi_expected.csv`) para las pruebas de contrato.
+  - 13 pruebas e2e nuevas; cobertura global 95 %.
+  - Verificado manualmente que ambos comandos, ejecutados tal cual los pide
+    el enunciado, terminan con código de salida 0.
+
 - **Fase 4 — Infraestructura (adaptadores)**: implementación concreta de los
   puertos definidos en la arquitectura, con pruebas de integración (E/S real
   sobre directorios temporales, HTTP simulado sin red).
@@ -72,6 +88,13 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   - Especificaciones por componente SPEC-001…SPEC-005 con criterios de aceptación.
   - Estrategia de pruebas, casos de uso, runbook y plan de fases.
   - Scaffolding de proyecto: `pyproject.toml`, `Makefile`, `.gitignore` ampliado.
+
+### Cambiado
+- Revisados los comentarios y docstrings de todo `src/` para que se lean como
+  una explicación natural en vez de una plantilla repetida (menos estructura
+  mecánica tipo `Args:`/`Returns:` en funciones simples, sin repetir la misma
+  frase de "pendiente de implementación" en cada stub, y sin etiquetar cada
+  línea con `FR-xx`/`NFR-xx`). No cambia ninguna lógica ni comportamiento.
 
 ### Corregido
 - Acotado el rango de `numpy` en `pyproject.toml` a `>=1.26,<2.3`: a partir de
