@@ -6,6 +6,26 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 8 — ETL con Pentaho/PDI (Parte 2)**: `etl_pdi/t_load_kpi.ktr` y
+  `etl_pdi/j_daily_kpi.kjb`, **validados contra una instalación real de
+  Pentaho Data Integration 9.4** (no solo redactados a mano).
+  - `t_load_kpi.ktr`: CSV Input → tipificación (Select Values) → Filter Rows
+    (descarta `requests_total <= 0` o `p90 < avg`) → dos Table Output
+    (`stg_kpi_endpoint_dia`, `fct_kpi_endpoint_dia`) con Truncate.
+  - `j_daily_kpi.kjb`: ejecuta la transformación, verifica la carga con un
+    paso SQL (registrado en la nueva tabla `etl_log`) y registra éxito o
+    error.
+  - `sql/ddl.sql`, `config/kettle.properties.example`, `README.md`.
+  - 16 pruebas de validación estructural nuevas.
+  - **3 problemas reales encontrados y corregidos probando con PDI real**
+    (no habrían aparecido con solo validación estructural): el tag correcto
+    del paso de tipificación es `<meta>` no `<metadata>`; las rutas se
+    resuelven con `${Internal.Transformation.Filename.Directory}` en vez de
+    rutas relativas simples; y `date_utc` se guarda como texto en vez de
+    tipo Fecha (el driver JDBC de SQLite lo serializaría como epoch).
+  - Verificado idempotente (Truncate) y el camino de error (forzando un CSV
+    ausente) con la instalación real.
+
 - **Fase 7 — Reporte HTML (Parte 3)**: el tercer comando del enunciado ya
   funciona de punta a punta.
   - `application/build_report.py`: orquesta métricas globales, gráficos y
@@ -169,10 +189,6 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   configuración pasa a ser constantes tipadas en `config.py` con los valores del
   enunciado ([ADR-0005](docs/adr/0005-configuration-and-secrets.md)).
 
-### Límite conocido
-- Los `.ktr`/`.kjb` no se ejecutan/validan en este entorno (sin Spoon/Kitchen); la
-  validación funcional de PDI la realiza el usuario en su instalación.
-
 ### Pendiente
-- Fases 8–10: ETL PDI, verificación y cierre documental (ver
+- Fases 9–10: verificación/endurecimiento y cierre documental (ver
   [roadmap-and-phases.md](docs/project-plan/roadmap-and-phases.md)).

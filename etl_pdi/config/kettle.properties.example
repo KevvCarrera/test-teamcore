@@ -1,0 +1,22 @@
+# Plantilla de configuración de Kettle/PDI para este ETL (FR-17).
+#
+# Este proyecto NO usa el archivo kettle.properties para las credenciales de
+# conexión: la conexión SQLite (`sqlite_kpi`) ya está declarada dentro de
+# `t_load_kpi.ktr` y `j_daily_kpi.kjb`, y usa la variable interna
+# `${Internal.Transformation.Filename.Directory}` / `${Internal.Job.Filename.Directory}`
+# para resolver la ruta de la base de datos relativa al propio fichero .ktr/.kjb,
+# sin rutas absolutas ni secretos.
+#
+# SQLite no requiere usuario/contraseña, así que no hay credenciales que
+# documentar aquí. Esta plantilla queda como el lugar donde declarar cualquier
+# variable adicional si se cambia de motor de base de datos en el futuro
+# (ver docs/adr/0013-pentaho-pdi-in-scope.md).
+#
+# Para usarla: copiar a tu carpeta de usuario de Kettle
+#   Windows: %USERPROFILE%\.kettle\kettle.properties
+#   Linux/macOS: ~/.kettle/kettle.properties
+# y descomentar/ajustar lo que necesites.
+
+# Ejemplo de variable adicional que podrías necesitar si mueves la base a otra
+# ruta absoluta (no se usa por defecto; el .ktr/.kjb ya resuelven la ruta solos):
+# KPI_SQLITE_PATH=/ruta/absoluta/a/kpi.sqlite

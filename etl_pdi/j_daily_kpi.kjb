@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>j_daily_kpi</name>
+  <description>Ejecuta t_load_kpi.ktr, verifica la carga y registra el resultado (FR-15).</description>
+  <extended_description/>
+  <job_version/>
+  <directory>/</directory>
+  <created_user>-</created_user>
+  <created_date>2026/07/12 00:00:00.000</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2026/07/12 00:00:00.000</modified_date>
+  <parameters>
+  </parameters>
+  <connection>
+    <name>sqlite_kpi</name>
+    <server/>
+    <type>SQLITE</type>
+    <access>Native</access>
+    <database>${Internal.Job.Filename.Directory}/db/kpi.sqlite</database>
+    <port/>
+    <username/>
+    <password/>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+    </attributes>
+  </connection>
+  <slaveservers>
+  </slaveservers>
+  <job-log-table>
+    <connection/>
+    <schema/>
+    <table/>
+    <size_limit_lines/>
+    <interval/>
+    <timeout_days/>
+  </job-log-table>
+  <jobentry-log-table>
+    <connection/>
+    <schema/>
+    <table/>
+    <timeout_days/>
+  </jobentry-log-table>
+  <channel-log-table>
+    <connection/>
+    <schema/>
+    <table/>
+    <timeout_days/>
+  </channel-log-table>
+  <pass_batchid>N</pass_batchid>
+  <shared_objects_file/>
+
+  <entries>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <attributes/>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>48</xloc>
+      <yloc>96</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Cargar KPIs (t_load_kpi)</name>
+      <description>Ejecuta la transformacion que lee el CSV, tipifica, filtra y carga a SQLite (FR-14).</description>
+      <type>TRANS</type>
+      <attributes/>
+      <specification_method>filename</specification_method>
+      <trans_object_id/>
+      <filename>${Internal.Job.Filename.Directory}/t_load_kpi.ktr</filename>
+      <transname/>
+      <arg_from_previous>N</arg_from_previous>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <cluster>N</cluster>
+      <slave_server_name/>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <follow_abort_remote>N</follow_abort_remote>
+      <create_parent_folder>N</create_parent_folder>
+      <logging_remote_work>N</logging_remote_work>
+      <run_configuration>Pentaho local</run_configuration>
+      <suppress_result_data>N</suppress_result_data>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>192</xloc>
+      <yloc>96</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Verificar carga</name>
+      <description>Compara filas cargadas contra la suma de success_2xx+client_4xx+server_5xx y lo registra en etl_log (FR-15, ver nota de interpretacion en SPEC-005).</description>
+      <type>SQL</type>
+      <attributes/>
+      <sql>INSERT INTO etl_log (run_at, status, rows_loaded, detail) SELECT datetime('now'), CASE WHEN (SELECT COUNT(*) FROM fct_kpi_endpoint_dia) = (SELECT COALESCE(SUM(success_2xx + client_4xx + server_5xx), 0) FROM fct_kpi_endpoint_dia) THEN 'OK' ELSE 'OK_CON_NOTA' END, (SELECT COUNT(*) FROM fct_kpi_endpoint_dia), 'filas_cargadas=' || (SELECT COUNT(*) FROM fct_kpi_endpoint_dia) || ' suma_2xx_4xx_5xx=' || (SELECT COALESCE(SUM(success_2xx + client_4xx + server_5xx), 0) FROM fct_kpi_endpoint_dia);</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>T</sendOneStatement>
+      <connection>sqlite_kpi</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>336</xloc>
+      <yloc>96</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Log de exito</name>
+      <description/>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>Carga de KPIs a SQLite completada correctamente (stg_kpi_endpoint_dia y fct_kpi_endpoint_dia). Ver etl_log para el detalle de la verificacion.</logmessage>
+      <loglevel>Basic</loglevel>
+      <logsubject>j_daily_kpi</logsubject>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>480</xloc>
+      <yloc>48</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Success</name>
+      <description/>
+      <type>SUCCESS</type>
+      <attributes/>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>624</xloc>
+      <yloc>48</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Log de error</name>
+      <description/>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>Fallo la carga de KPIs a SQLite (t_load_kpi) o la verificacion posterior.</logmessage>
+      <loglevel>Error</loglevel>
+      <logsubject>j_daily_kpi</logsubject>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>192</xloc>
+      <yloc>224</yloc>
+      <attributes_kjc/>
+    </entry>
+  </entries>
+
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>Cargar KPIs (t_load_kpi)</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Cargar KPIs (t_load_kpi)</from>
+      <to>Verificar carga</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Cargar KPIs (t_load_kpi)</from>
+      <to>Log de error</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Verificar carga</from>
+      <to>Log de exito</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Verificar carga</from>
+      <to>Log de error</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Log de exito</from>
+      <to>Success</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+  </notepads>
+</job>

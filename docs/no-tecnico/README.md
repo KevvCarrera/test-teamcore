@@ -41,10 +41,12 @@ revisa y se corrige en el mismo cambio.
 8. **[07-reporte-explicado.md](07-reporte-explicado.md)** — la Fase 7: el
    reporte HTML final, y un problema real que se encontró y corrigió al
    conectar las piezas.
+9. **[08-etl-pdi-explicado.md](08-etl-pdi-explicado.md)** — la Fase 8: el
+   ETL de Pentaho, probado con una instalación real, y tres problemas
+   reales encontrados y corregidos en el proceso.
 
-Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
-documentos numerados aquí (por ejemplo, `08-...` para el ETL de Pentaho),
-cada uno enlazado desde este índice.
+Con esto, las cuatro partes del enunciado están documentadas de punta a
+punta. Los próximos documentos (si aplica) cubrirán el cierre del proyecto.
 
 ## Qué NO vas a encontrar aquí
 
