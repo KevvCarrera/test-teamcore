@@ -6,6 +6,27 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Adaptador Selenium real** (no contemplado en el plan original; agregado
+  a pedido explícito, ver [ADR-0014](docs/adr/0014-selenium-adapter-as-alternative.md)):
+  demuestra un uso genuino de Selenium, permitido por el enunciado, sin
+  reemplazar ni arriesgar el cliente HTTP ya probado (Fase 6).
+  - `infrastructure/http/selenium_client.py`: `SeleniumHttpClient` implementa
+    el mismo puerto `HttpPort` que `RequestsHttpClient` — misma política de
+    reintentos, mismos errores de dominio. Las funciones de `tasks.py`
+    funcionan igual con cualquiera de los dos adaptadores, sin modificarlas.
+  - Usa `fetch()` ejecutado dentro del navegador real (vía
+    `execute_async_script`) en vez de navegar directamente a cada URL, para
+    evitar que Chrome/Edge re-rendericen el JSON/XML en su visor interno.
+  - `cliente_http.py` **sigue usando `RequestsHttpClient` por defecto**; no
+    se agregó ningún parámetro de CLI nuevo.
+  - `selenium` pasa a ser dependencia de runtime real (antes "permitida pero
+    no usada"); `ADR-0012` actualizado.
+  - 23 pruebas nuevas con un doble del *driver* (rápidas, sin navegador
+    real) + 2 pruebas opcionales marcadas `browser` (excluidas por defecto)
+    para verificación manual con Chrome/Edge real.
+  - Verificado con un Chrome real: el mecanismo funciona correctamente
+    (mismo hallazgo de disponibilidad de `httpbin.org` que en la Fase 6).
+
 - **Fase 6 — Cliente HTTP (Parte 0)**: los 6 escenarios contra
   `httpbin.org` ya funcionan de punta a punta con `python cliente_http.py`
   (sin parámetros, tal como pide el enunciado).

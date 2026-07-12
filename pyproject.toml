@@ -18,7 +18,8 @@ authors = [{ name = "Equipo de Ingeniería" }]
 
 # --- Dependencias de runtime -------------------------------------------------
 # Estrictamente dentro de la frontera de librerías permitidas por el enunciado.
-# selenium / playwright están permitidas pero NO se usan (ver ADR-0004).
+# selenium se usa como adaptador alternativo de HttpPort, no como cliente por
+# defecto (ver ADR-0014). playwright queda permitida pero sin usar.
 dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
@@ -26,6 +27,7 @@ dependencies = [
     "numpy>=1.26,<2.3",  # 2.3+ requiere sintaxis PEP 695 en sus stubs (rompe mypy con python_version=3.11)
     "pandas>=2.1",
     "matplotlib>=3.8",
+    "selenium>=4.20",
 ]
 
 [project.optional-dependencies]
@@ -87,12 +89,13 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
-addopts = "-ra -q --strict-markers -m 'not network'"
+addopts = "-ra -q --strict-markers -m 'not network and not browser'"
 markers = [
     "unit: pruebas unitarias puras (sin E/S ni red)",
     "integration: pruebas de integración con ficheros temporales o dobles HTTP",
     "e2e: pruebas de extremo a extremo sobre las CLIs",
     "network: requieren red real contra httpbin.org (excluidas por defecto)",
+    "browser: requieren un navegador Chrome/Edge real (Selenium, excluidas por defecto)",
 ]
 
 [tool.coverage.run]

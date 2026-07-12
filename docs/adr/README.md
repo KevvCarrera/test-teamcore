@@ -20,3 +20,4 @@ Formato: basado en [Michael Nygard](https://cognitect.com/blog/2011/11/15/docume
 | [0011](0011-testing-strategy-and-tooling.md) | Estrategia y tooling de pruebas | Aceptado |
 | [0012](0012-dependency-boundary-allowed-libraries.md) | Frontera de librerías permitidas | Aceptado |
 | [0013](0013-pentaho-pdi-in-scope.md) | Pentaho/PDI dentro del alcance | Aceptado |
+| [0014](0014-selenium-adapter-as-alternative.md) | Adaptador Selenium real como alternativa a `requests` | Aceptado |

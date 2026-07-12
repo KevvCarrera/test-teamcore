@@ -15,10 +15,13 @@ de *runtime* (entregable) de las de *desarrollo* (tooling).
 Definir dos conjuntos explícitos:
 
 **Runtime (entregable)** — solo estas, dentro de lo permitido:
-`requests`, `beautifulsoup4`, `lxml`, `numpy`, `pandas`, `matplotlib` + stdlib
-(`json`, `csv`, `datetime`, `argparse`, `pathlib`, `logging`, `dataclasses`,
-`typing`, `urllib`). `selenium`/`playwright` quedan permitidas pero **sin usar**
-(ver [ADR-0004](0004-http-requests-over-browser-automation.md)).
+`requests`, `beautifulsoup4`, `lxml`, `numpy`, `pandas`, `matplotlib`,
+`selenium` + stdlib (`json`, `csv`, `datetime`, `argparse`, `pathlib`,
+`logging`, `dataclasses`, `typing`, `urllib`). `selenium` se usa como
+adaptador **alternativo** de `HttpPort`, no como el cliente por defecto (ver
+[ADR-0014](0014-selenium-adapter-as-alternative.md), que actualiza la
+decisión original de [ADR-0004](0004-http-requests-over-browser-automation.md)).
+`playwright` queda permitida pero sin usar.
 
 **Desarrollo (no entregable)** — no forman parte del runtime:
 `pytest`, `pytest-cov`, `responses`, `ruff`, `mypy`, `types-requests`.
@@ -31,7 +34,8 @@ Reglas:
 
 | Librería | Ámbito | Uso |
 |---|---|---|
-| requests | runtime | Cliente HTTP (FR-01…FR-08) |
+| requests | runtime | Cliente HTTP por defecto (FR-01…FR-08) |
+| selenium | runtime | Adaptador alternativo de `HttpPort` (ADR-0014), no usado por defecto |
 | beautifulsoup4 / lxml | runtime | Parseo HTML/XML (FR-05, FR-06) |
 | numpy | runtime | Percentil 90 (FR-10) |
 | pandas | runtime | Carga CSV en reporte (FR-13) |
@@ -42,8 +46,10 @@ Reglas:
 
 - (+) Cumplimiento verificable de la restricción del enunciado.
 - (+) Separación limpia entre lo entregable y el tooling.
-- (−) El evaluador podría esperar ver Selenium/Playwright; se explicita el porqué
-  en ADR-0004 para evitar malentendidos.
+- (+) Selenium ya no es solo un punto de extensión documentado: hay un
+  adaptador real y probado (ADR-0014).
+- (−) `playwright` sigue permitida pero sin usar; no se justificó una
+  segunda librería de navegador con el mismo propósito que Selenium.
 
 ## Alternativas consideradas
 

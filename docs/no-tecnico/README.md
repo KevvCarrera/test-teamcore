@@ -34,6 +34,10 @@ revisa y se corrige en el mismo cambio.
 6. **[06-cliente-http-explicado.md](06-cliente-http-explicado.md)** — la
    Fase 6: los 6 escenarios contra `httpbin.org`, cómo se comportan entre sí,
    y un bug real que se encontró y corrigió probando contra el sitio en vivo.
+7. **[06b-adaptador-selenium-explicado.md](06b-adaptador-selenium-explicado.md)** —
+   una unidad no planificada originalmente: un segundo "mensajero" basado en
+   un navegador Chrome real (Selenium), agregado a pedido explícito, sin
+   tocar el que ya funcionaba.
 
 Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
 documentos numerados aquí (por ejemplo, `07-...` para el reporte HTML), cada
