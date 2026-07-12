@@ -1,10 +1,8 @@
-"""CLI `generar_reporte.py`: genera el reporte HTML de KPIs (FR-13).
+"""`python generar_reporte.py --input ... --output ... --umbral_p90 ...`.
 
-Pendiente de implementación en Fase 7 (ver TODO.md). Diseño en
-docs/specs/SPEC-004-generar-reporte.md.
+Todavía no hace nada — llega en la Fase 7.
 """
 
 
 def main() -> int:
-    """Punto de entrada de la CLI. Implementación pendiente (Fase 7)."""
-    raise NotImplementedError("generar_reporte.py se implementa en la Fase 7 (ver TODO.md)")
+    raise NotImplementedError("generar_reporte.py se implementa en la Fase 7")

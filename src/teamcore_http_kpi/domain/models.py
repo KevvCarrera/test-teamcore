@@ -1,10 +1,10 @@
-"""Modelos de dominio: dataclasses inmutables tipadas.
+"""Los tres modelos de datos del dominio: fichas inmutables, sin lógica propia.
 
-Nota de interpretación: `project-structure.md` menciona `FormData` como parte
-de este módulo, pero `HttpPort.post` (docs/architecture/component-model.md)
-recibe `data: Mapping[str, str]`, no un objeto de dominio propio. Los datos de
-formulario ya viven, tipados, en `config.FormData` (Fase 2, ADR-0005); no se
-duplica aquí para no introducir un segundo modelo con el mismo propósito.
+Un detalle para quien busque `FormData` aquí: la especificación de la
+estructura de carpetas la menciona como parte de este módulo, pero ya vive en
+`config.py` con el mismo propósito (los datos del formulario de prueba), y el
+puerto HTTP (`HttpPort.post`) recibe un `Mapping[str, str]` plano, no un tipo
+de dominio. Duplicarla aquí solo habría añadido confusión.
 """
 
 from dataclasses import dataclass
@@ -13,12 +13,10 @@ from datetime import date, datetime
 
 @dataclass(frozen=True)
 class BitacoraRecord:
-    """Un registro de la bitácora sintética de llamadas HTTP (FR-09).
+    """Una llamada HTTP simulada: la versión en memoria de una línea de `datos.jsonl`.
 
-    Espejo en memoria de una línea de `datos.jsonl`
-    (docs/contracts/data-contracts.md#bitácora-datosjsonl). La serialización a
-    JSON (incluido el formato `Z` de `timestamp_utc`) es responsabilidad de la
-    capa `infrastructure/io`, no de este modelo.
+    Convertir esto a JSON (con el `Z` final del timestamp incluido) es tarea
+    de la capa de E/S, no de este modelo.
     """
 
     timestamp_utc: datetime
@@ -30,10 +28,7 @@ class BitacoraRecord:
 
 @dataclass(frozen=True)
 class KpiRow:
-    """Una fila del CSV de KPIs, agregada por `(date_utc, endpoint_base)` (FR-10).
-
-    Columnas y orden exactos según docs/contracts/data-contracts.md#kpi-csv.
-    """
+    """Una fila del CSV de KPIs: un resumen por día y por tipo de endpoint."""
 
     date_utc: date
     endpoint_base: str
@@ -48,7 +43,7 @@ class KpiRow:
 
 @dataclass(frozen=True)
 class GlobalMetrics:
-    """Métricas globales del reporte HTML (FR-13, docs/specs/SPEC-004-generar-reporte.md)."""
+    """Los números que van arriba del todo en el reporte HTML."""
 
     total_requests: int
     pct_success: float

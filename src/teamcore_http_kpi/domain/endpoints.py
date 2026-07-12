@@ -1,33 +1,19 @@
-"""Normalización de endpoints (FR-10, NFR-05).
-
-Convierte un `endpoint` de la bitácora en su `endpoint_base` para agrupar los
-KPIs. Ver la tabla de casos y la justificación en
-docs/contracts/data-contracts.md#normalización-de-endpoints.
-"""
+"""Cómo se agrupan los endpoints para calcular los KPIs."""
 
 
 def normalize_endpoint(raw: str) -> str:
-    """Normaliza `raw` a su forma base (`endpoint_base`) para agrupar KPIs.
+    """Reduce un endpoint a su categoría base, para poder agruparlo en los KPIs.
 
-    Regla determinista (docs/contracts/data-contracts.md#normalización-de-endpoints):
-    1. Se descarta cualquier query string (`?...`) y fragmento (`#...`).
-    2. Se elimina la barra final redundante.
-    3. Se toma el **primer segmento** de la ruta restante como base,
-       anteponiendo `/`: `"/" + path.strip("/").split("/")[0]`.
+    La idea: `/status/403` y `/status/500` son, a efectos de estadísticas,
+    "lo mismo" — ambos son el endpoint `/status` con un código distinto. Por
+    eso se normaliza así: se quita cualquier `?query` o `#fragmento`, se
+    recortan las barras sobrantes y se toma solo el primer segmento de la
+    ruta. `/cookies/set?session=activa` termina siendo `/cookies`, `/get`
+    se queda igual.
 
-    Ejemplos: `"/status/403"` -> `"/status"`; `"/cookies/set?session=activa"`
-    -> `"/cookies"`; `"/get"` -> `"/get"`.
-
-    Args:
-        raw: el valor de `endpoint` tal como aparece en la bitácora.
-
-    Returns:
-        El `endpoint_base` normalizado (siempre con un único `/` inicial).
-
-    Raises:
-        ValueError: si `raw` queda vacío tras la normalización (p. ej. `""`
-            o `"/"`), que es un dato de entrada inválido (ver "casos límite"
-            en el contrato).
+    Si no queda nada después de recortar (alguien pasó `""` o `"/"`), se
+    lanza un error en vez de adivinar una categoría — es un dato de entrada
+    inválido, no algo que debamos normalizar en silencio.
     """
     without_fragment = raw.split("#", 1)[0]
     without_query = without_fragment.split("?", 1)[0]

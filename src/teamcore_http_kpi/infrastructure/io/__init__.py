@@ -1,1 +1,3 @@
-"""Adaptadores de E/S: bitácora JSONL, CSV de KPIs y artefactos del cliente HTTP."""
+"""Lectura y escritura de archivos: la bitácora JSONL, el CSV de KPIs y los
+artefactos del cliente HTTP.
+"""

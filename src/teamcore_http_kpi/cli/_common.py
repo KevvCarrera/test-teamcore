@@ -1,4 +1,4 @@
-"""Utilidades compartidas por las CLIs: códigos de salida (ver ADR-0007)."""
+"""Códigos de salida compartidos por las cuatro CLIs."""
 
 EXIT_OK = 0
 EXIT_DATA_ERROR = 1

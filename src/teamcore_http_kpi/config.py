@@ -1,9 +1,9 @@
-"""Configuración del proyecto como constantes tipadas.
+"""Configuración del proyecto, como constantes tipadas en lugar de `.env`.
 
-Sin `.env` ni variables de entorno (ver docs/adr/0005-configuration-and-secrets.md).
-Los valores por defecto son exactamente los fijados por el enunciado
-(`spec/Test Tecnico.md`): URL base, credenciales de prueba y datos de formulario.
-Las pruebas construyen `Settings(...)` con overrides explícitos cuando lo necesiten.
+Los valores por defecto son los que trae el propio enunciado (URL base,
+credenciales de prueba, datos del formulario) — no hay nada que inventar ni
+nada que ocultar en variables de entorno. Las pruebas que necesiten otros
+valores simplemente construyen su propio `Settings(...)`.
 """
 
 from dataclasses import dataclass
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class FormData:
-    """Datos de formulario para el escenario POST /post (FR-07)."""
+    """Los datos que se envían al simular el formulario de `/post`."""
 
     nombre: str = "Juan"
     apellido: str = "Pérez"
@@ -21,10 +21,10 @@ class FormData:
 
 @dataclass(frozen=True)
 class Settings:
-    """Configuración del cliente HTTP y de los escenarios (FR-01…FR-08).
+    """Configuración del cliente HTTP: URL base, credenciales y política de reintentos.
 
-    Los valores por defecto son los del enunciado. No hay secretos reales:
-    las credenciales son de prueba y no sensibles (NFR-14).
+    Las credenciales son las de prueba que da el enunciado, no secretos
+    reales, así que no pasa nada por tenerlas aquí como texto plano.
     """
 
     base_url: str = "https://httpbin.org"

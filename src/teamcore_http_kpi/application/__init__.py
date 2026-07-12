@@ -1,4 +1,1 @@
-"""Capa `application`: casos de uso que orquestan `domain` y los puertos.
-
-Ver docs/architecture/component-model.md.
-"""
+"""Los casos de uso: qué pasos seguir y en qué orden, apoyándose en `domain` y en los puertos."""

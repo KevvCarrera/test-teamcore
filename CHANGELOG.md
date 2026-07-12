@@ -6,6 +6,30 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 4 — Infraestructura (adaptadores)**: implementación concreta de los
+  puertos definidos en la arquitectura, con pruebas de integración (E/S real
+  sobre directorios temporales, HTTP simulado sin red).
+  - `application/ports.py`: los 6 puertos (`Protocol`) que conectan
+    `application` con `infrastructure`.
+  - `infrastructure/io/jsonl_repository.py`: lectura/escritura de
+    `datos.jsonl`, en streaming, con descarte de líneas corruptas vía
+    `WARNING` (FR-09, FR-11).
+  - `infrastructure/io/csv_repository.py`: lectura/escritura del CSV de KPIs
+    conforme al contrato (FR-10, FR-13).
+  - `infrastructure/io/artifact_writer.py`: escritura de `datos.json`,
+    `datos.xml` y `titulo.html` (FR-04, FR-05, FR-06).
+  - `infrastructure/http/client.py`: `RequestsHttpClient` con sesión
+    compartida, reintentos con backoff exponencial y manejo configurable
+    del `403` (FR-01…FR-08).
+  - `infrastructure/reporting/charts.py` y `html_report.py`:
+    `MatplotlibChartRenderer` (gráficos PNG, backend `Agg`) y
+    `HtmlReportRenderer` (HTML autocontenido, con alerta por umbral de p90 y
+    escape de valores) (FR-13).
+  - `domain/kpi.py`: se añadió `compute_global_metrics` (métricas globales
+    del reporte), resolviendo una discrepancia menor entre `SPEC-004` (que
+    sugería un `domain/report.py` separado) y la estructura ya aprobada.
+  - 41 pruebas de integración nuevas; cobertura global 86 %.
+
 - **Fase 3 — Dominio (TDD)**: lógica de negocio pura, sin red ni E/S, con
   cobertura de pruebas del 100 %.
   - `domain/models.py`: `BitacoraRecord`, `KpiRow`, `GlobalMetrics`.

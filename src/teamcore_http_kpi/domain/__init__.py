@@ -1,6 +1,6 @@
-"""Capa `domain`: lógica de negocio pura (sin E/S, sin red, sin CLI).
+"""Lógica de negocio pura: sin red, sin archivos, sin CLI.
 
-Ver docs/architecture/architecture-overview.md — la regla de dependencia exige
-que nada en este paquete importe `requests`, `pandas`, `matplotlib`, `bs4`,
-`lxml` ni `argparse`. Verificado por tests/unit/test_architecture_layering.py.
+Regla simple y no negociable: nada aquí importa `requests`, `pandas`,
+`matplotlib`, `bs4`, `lxml` ni `argparse`. Lo comprueba
+tests/unit/test_architecture_layering.py.
 """

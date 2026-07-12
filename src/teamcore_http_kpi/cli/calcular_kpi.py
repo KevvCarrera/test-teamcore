@@ -1,10 +1,8 @@
-"""CLI `calcular_kpi.py`: calcula los KPIs diarios por endpoint (FR-10).
+"""`python calcular_kpi.py --input ... --output ...`.
 
-Pendiente de implementación en Fase 5 (ver TODO.md). Diseño en
-docs/specs/SPEC-003-calcular-kpi.md.
+Todavía no hace nada — llega junto con `generar_datos.py` en la Fase 5.
 """
 
 
 def main() -> int:
-    """Punto de entrada de la CLI. Implementación pendiente (Fase 5)."""
-    raise NotImplementedError("calcular_kpi.py se implementa en la Fase 5 (ver TODO.md)")
+    raise NotImplementedError("calcular_kpi.py se implementa en la Fase 5")

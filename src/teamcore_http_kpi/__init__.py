@@ -1,6 +1,6 @@
-"""Paquete `teamcore_http_kpi`: cliente HTTP, cálculo de KPIs y reporte HTML.
+"""Cliente HTTP automatizado, cálculo de KPIs y reporte HTML.
 
-Ver docs/README.md para el mapa completo de especificaciones (SDD).
+El mapa completo de la documentación está en docs/README.md.
 """
 
 __version__ = "0.1.0"

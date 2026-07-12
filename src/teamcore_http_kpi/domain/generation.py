@@ -1,10 +1,9 @@
-"""Reglas de generación de la bitácora sintética (FR-09, NFR-07).
+"""Generación de la bitácora sintética: datos "aleatorios" pero reproducibles.
 
-Diseño y ejemplos en docs/specs/SPEC-002-generar-datos.md. Todas las
-decisiones aleatorias (endpoint, status, latencia, parse_result, offset
-temporal) se toman del mismo `numpy.random.Generator`, en el mismo orden, de
-modo que la misma `seed` + el mismo `ref_utc` produzcan siempre la misma
-secuencia de registros (determinismo, NFR-07).
+Todas las decisiones al azar (qué endpoint, qué status, cuánto tardó, si
+falló el parseo, cuándo ocurrió) salen del mismo generador de números
+aleatorios, siempre en el mismo orden. Por eso la misma `seed` junto con el
+mismo `ref_utc` produce siempre exactamente la misma secuencia de registros.
 """
 
 from collections.abc import Iterator
@@ -42,22 +41,14 @@ _P_PARSE_ERROR = 0.05
 
 
 def generate_records(n: int, *, seed: int, ref_utc: datetime) -> Iterator[BitacoraRecord]:
-    """Genera `n` registros deterministas de la bitácora sintética.
+    """Genera `n` registros de bitácora, deterministas dada la `seed` y `ref_utc`.
 
-    Args:
-        n: número de registros a generar (debe ser mayor que 0).
-        seed: semilla del generador `numpy.random.default_rng(seed)`.
-        ref_utc: instante UTC de referencia ("ahora"); en producción es
-            `datetime.now(UTC)`, en pruebas se inyecta un valor fijo.
-
-    Yields:
-        Registros con `timestamp_utc` dentro de las últimas 72 horas
-        respecto a `ref_utc`, `endpoint` muestreado de `CATALOG`,
-        `status_code` coherente con el endpoint, `elapsed_ms` en
-        `[50, 800]` y `parse_result` "error" en ~5 % de los casos.
-
-    Raises:
-        ValueError: si `n` no es mayor que 0.
+    `ref_utc` es el "ahora" desde el que se cuentan las últimas 72 horas; en
+    producción es simplemente `datetime.now(UTC)`, y en pruebas se pasa un
+    valor fijo para que el resultado sea comparable. Cada registro sale con
+    un endpoint del catálogo, un status coherente con ese endpoint, una
+    latencia entre 50 y 800 ms, y un ~5 % de probabilidad de marcar error de
+    parseo.
     """
     if n <= 0:
         raise ValueError("n debe ser mayor que 0")

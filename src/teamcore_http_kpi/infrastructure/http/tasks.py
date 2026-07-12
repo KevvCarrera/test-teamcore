@@ -1,5 +1,6 @@
-"""Implementación de los 6 escenarios httpbin (FR-01…FR-08).
+"""Los 6 escenarios contra httpbin.org: auth básica, cookies, 403, las tres
+extracciones (JSON/XML/HTML), formulario y redirección.
 
-Pendiente de implementación en Fase 6 (ver TODO.md). Diseño en
-docs/specs/SPEC-001-http-client.md.
+Llega en la Fase 6, apoyándose en `RequestsHttpClient` (ya construido en la
+Fase 4).
 """

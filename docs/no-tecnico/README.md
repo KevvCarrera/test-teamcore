@@ -24,10 +24,15 @@ revisa y se corrige en el mismo cambio.
    negocio de la Fase 3: el árbol de errores, las "fichas" de datos, la
    normalización de endpoints, el percentil 90 y la generación de datos de
    ejemplo.
+4. **[04-infraestructura-explicada.md](04-infraestructura-explicada.md)** —
+   los "conectores" de la Fase 4: lectura/escritura de archivos, el mensajero
+   HTTP con reglas de reintento, y quién dibuja los gráficos y arma el
+   reporte final.
 
 Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
-documentos numerados aquí (por ejemplo, `04-...` para los conectores de la
-Fase 4, `05-...` para las CLIs, etc.), cada uno enlazado desde este índice.
+documentos numerados aquí (por ejemplo, `05-...` para las CLIs de datos,
+`06-...` para el cliente HTTP en vivo, etc.), cada uno enlazado desde este
+índice.
 
 ## Qué NO vas a encontrar aquí
 

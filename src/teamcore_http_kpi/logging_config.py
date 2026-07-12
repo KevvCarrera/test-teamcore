@@ -1,9 +1,9 @@
-"""Configuración de logging estructurado (ver docs/adr/0006-logging-strategy.md).
+"""Configuración de logging.
 
-Los logs van a `stderr`; los artefactos de datos van a ficheros o `stdout` según
-el script. El nivel y el formato se fijan una única vez, en el *composition
-root* de cada CLI, mediante `setup_logging(...)`. Nunca se usa `print()` para
-diagnóstico ni se registran credenciales.
+Los logs van siempre a `stderr`, para no mezclarse con los datos que cada
+script escribe en ficheros o en `stdout`. Cada CLI llama a `setup_logging(...)`
+una única vez, al arrancar. Nada de `print()` para diagnóstico, y nunca se
+registran credenciales.
 """
 
 import logging

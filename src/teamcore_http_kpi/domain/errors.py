@@ -1,36 +1,35 @@
-"""Jerarquía de excepciones de dominio (FR-11, NFR-03).
+"""Los errores propios del proyecto, organizados por tipo de problema.
 
-Ver docs/architecture/component-model.md#5-jerarquía-de-errores-resumen y
-docs/adr/0007-error-handling-retries-idempotency.md. Prohibido `except:`
-desnudo o silenciar excepciones en el resto del código: todo error se maneja
-a través de un tipo concreto de esta jerarquía.
+Nada de `except:` desnudo ni de tragarse excepciones en silencio en el resto
+del código: cada fallo se maneja a través de alguno de estos tipos, para que
+sea obvio qué salió mal y con qué código de salida termina la CLI.
 """
 
 from pathlib import Path
 
 
 class TeamcoreError(Exception):
-    """Excepción base de todos los errores propios del proyecto."""
+    """La raíz de todos los errores propios del proyecto."""
 
 
 class ConfigError(TeamcoreError):
-    """Configuración o parámetros de CLI inválidos (fail fast, exit code 2)."""
+    """Un parámetro de configuración o de CLI no es válido (exit code 2)."""
 
 
 class HttpTaskError(TeamcoreError):
-    """Fallo no recuperable en un escenario del cliente HTTP (exit code 3)."""
+    """Un escenario del cliente HTTP falló de forma no recuperable (exit code 3)."""
 
 
 class AccessForbiddenError(HttpTaskError):
-    """Se agotaron los reintentos tras recibir 403 en un escenario (FR-03)."""
+    """Se recibió 403 y se agotaron los reintentos configurados."""
 
 
 class DataInputError(TeamcoreError):
-    """Error de entrada de datos: E/S o contenido inválido (exit code 1)."""
+    """Algo falló al leer los datos de entrada: no existen o son inválidos (exit code 1)."""
 
 
 class InputFileNotFoundError(DataInputError):
-    """El fichero de entrada indicado no existe."""
+    """El archivo de entrada no existe en la ruta indicada."""
 
     def __init__(self, path: Path) -> None:
         super().__init__(f"No se encontró el archivo de entrada: {path}")
@@ -38,7 +37,7 @@ class InputFileNotFoundError(DataInputError):
 
 
 class MalformedRecordError(DataInputError):
-    """Una línea del JSONL de entrada no es válida (se reporta con su número)."""
+    """Una línea del JSONL no se pudo interpretar; se guarda el número de línea."""
 
     def __init__(self, line_number: int, reason: str) -> None:
         super().__init__(f"Línea {line_number} inválida: {reason}")
@@ -47,4 +46,4 @@ class MalformedRecordError(DataInputError):
 
 
 class ReportError(TeamcoreError):
-    """Fallo al construir el reporte HTML (FR-13)."""
+    """Algo falló al construir el reporte HTML."""

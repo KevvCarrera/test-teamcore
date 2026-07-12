@@ -1,5 +1,5 @@
-"""Caso de uso: construcción del reporte HTML de KPIs (FR-13).
+"""Caso de uso de `generar_reporte.py`: coordina métricas, gráficos y HTML final.
 
-Pendiente de implementación en Fase 7 (ver TODO.md). Diseño en
-docs/specs/SPEC-004-generar-reporte.md.
+Llega en la Fase 7, junto con la CLI y las pruebas end-to-end sobre un CSV
+de referencia.
 """

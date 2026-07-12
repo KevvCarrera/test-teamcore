@@ -1,7 +1,4 @@
-"""Agregados de KPI y percentil 90 (FR-10, NFR-05).
-
-Definiciones exactas en docs/contracts/data-contracts.md#kpis.
-"""
+"""Cálculo de los KPIs diarios por endpoint, incluido el percentil 90."""
 
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
@@ -10,28 +7,20 @@ from datetime import date
 import numpy as np
 
 from teamcore_http_kpi.domain.endpoints import normalize_endpoint
-from teamcore_http_kpi.domain.models import BitacoraRecord, KpiRow
+from teamcore_http_kpi.domain.models import BitacoraRecord, GlobalMetrics, KpiRow
 
 
 def percentile_90(values: Sequence[float]) -> float:
-    """Percentil 90 de `values` vía `numpy.percentile(values, 90)`.
+    """Percentil 90 de un conjunto de latencias, vía `numpy.percentile`.
 
-    `numpy.percentile` calcula el percentil q-ésimo de un conjunto de datos;
-    por defecto usa interpolación lineal entre los dos puntos más cercanos
-    cuando el percentil no cae exactamente sobre una observación. El p90
-    significa que el 90 % de las observaciones son menores o iguales a este
-    valor: es un indicador de la "cola" de latencia, más robusto frente a
-    valores atípicos aislados que el promedio simple.
+    El p90 responde a la pregunta "¿cuánto tardó el 90 % de las llamadas, o
+    menos?" — es una medida de la cola de latencia, y aguanta mucho mejor un
+    par de valores atípicos que el promedio simple. Se delega el cálculo en
+    `numpy` (interpolación lineal por defecto) en vez de reimplementar la
+    fórmula a mano.
 
-    Args:
-        values: latencias (`elapsed_ms`) de un grupo.
-
-    Returns:
-        El percentil 90, sin redondear (el redondeo a 2 decimales del
-        contrato lo aplica `aggregate` al construir la fila del CSV).
-
-    Raises:
-        ValueError: si `values` está vacío (no se puede definir un percentil).
+    El resultado se devuelve sin redondear; `aggregate` decide el redondeo a
+    2 decimales al construir cada fila del CSV.
     """
     if not values:
         raise ValueError("No se puede calcular el percentil 90 de una secuencia vacía")
@@ -39,18 +28,16 @@ def percentile_90(values: Sequence[float]) -> float:
 
 
 def aggregate(records: Iterable[BitacoraRecord]) -> list[KpiRow]:
-    """Agrupa `records` por `(date_utc, endpoint_base)` y calcula sus KPIs.
+    """Agrupa registros por día y endpoint, y calcula sus KPIs.
 
-    `date_utc` es la fecha (sin hora) de `timestamp_utc`; `endpoint_base` se
-    obtiene con `normalize_endpoint`. Por cada grupo se calculan los conteos
-    por rango de `status_code`, los `parse_errors`, la media de `elapsed_ms`
-    (`avg_elapsed_ms`) y el percentil 90 (`p90_elapsed_ms`), ambos redondeados
-    a 2 decimales según el contrato.
+    Cada grupo es una combinación de `date_utc` (la fecha de `timestamp_utc`,
+    sin la hora) y `endpoint_base` (vía `normalize_endpoint`). Por grupo se
+    cuentan las respuestas por rango de estado, los errores de parseo, y se
+    calcula el promedio y el percentil 90 de la latencia.
 
-    Returns:
-        Las filas resultantes, ordenadas ascendentemente por
-        `(date_utc, endpoint_base)` para una salida determinista
-        (docs/contracts/data-contracts.md#kpi-csv).
+    Las filas salen ordenadas por `(date_utc, endpoint_base)`: así, correr
+    esto dos veces con la misma entrada da siempre el mismo CSV, línea por
+    línea.
     """
     groups: dict[tuple[date, str], list[BitacoraRecord]] = defaultdict(list)
     for record in records:
@@ -63,6 +50,33 @@ def aggregate(records: Iterable[BitacoraRecord]) -> list[KpiRow]:
     ]
     rows.sort(key=lambda row: (row.date_utc, row.endpoint_base))
     return rows
+
+
+def compute_global_metrics(rows: Sequence[KpiRow]) -> GlobalMetrics:
+    """Calcula los números globales que encabezan el reporte HTML.
+
+    `pct_success` y `pct_errors` son fracciones entre 0 y 1 (quien los
+    muestra decide multiplicarlos por 100). El caso curioso es `p90_global`:
+    para cuando llegamos aquí, los datos ya están agregados por grupo, así
+    que ya no tenemos las latencias individuales para sacar un percentil de
+    verdad. Lo que se hace en su lugar es una media del `p90_elapsed_ms` de
+    cada grupo, ponderada por su `requests_total` — una aproximación
+    razonable, no un percentil recalculado desde cero.
+    """
+    if not rows:
+        raise ValueError("No se pueden calcular métricas globales sin filas de KPI")
+
+    total_requests = sum(row.requests_total for row in rows)
+    total_success = sum(row.success_2xx for row in rows)
+    total_errors = sum(row.client_4xx + row.server_5xx for row in rows)
+    weighted_p90 = sum(row.p90_elapsed_ms * row.requests_total for row in rows)
+
+    return GlobalMetrics(
+        total_requests=total_requests,
+        pct_success=total_success / total_requests,
+        pct_errors=total_errors / total_requests,
+        p90_global=round(weighted_p90 / total_requests, 2),
+    )
 
 
 def _aggregate_group(

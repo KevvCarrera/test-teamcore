@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Shim raíz: delega en `teamcore_http_kpi.cli.generar_reporte:main` (ver ADR-0008)."""
+"""Atajo para poder ejecutar `python generar_reporte.py` desde la raíz del repo."""
 
 from teamcore_http_kpi.cli.generar_reporte import main
 

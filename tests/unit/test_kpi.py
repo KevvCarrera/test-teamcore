@@ -3,13 +3,13 @@
 Definiciones en docs/contracts/data-contracts.md#kpis.
 """
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 import numpy as np
 import pytest
 
-from teamcore_http_kpi.domain.kpi import aggregate, percentile_90
-from teamcore_http_kpi.domain.models import BitacoraRecord
+from teamcore_http_kpi.domain.kpi import aggregate, compute_global_metrics, percentile_90
+from teamcore_http_kpi.domain.models import BitacoraRecord, KpiRow
 
 
 @pytest.mark.unit
@@ -99,3 +99,54 @@ def test_aggregate_sorted_by_date_then_endpoint() -> None:
 @pytest.mark.unit
 def test_aggregate_empty_input_returns_empty_list() -> None:
     assert aggregate([]) == []
+
+
+def _kpi_row(
+    endpoint_base: str,
+    requests_total: int,
+    success_2xx: int,
+    client_4xx: int,
+    server_5xx: int,
+    avg_elapsed_ms: float,
+    p90_elapsed_ms: float,
+) -> KpiRow:
+    return KpiRow(
+        date_utc=date(2026, 7, 9),
+        endpoint_base=endpoint_base,
+        requests_total=requests_total,
+        success_2xx=success_2xx,
+        client_4xx=client_4xx,
+        server_5xx=server_5xx,
+        parse_errors=0,
+        avg_elapsed_ms=avg_elapsed_ms,
+        p90_elapsed_ms=p90_elapsed_ms,
+    )
+
+
+@pytest.mark.unit
+def test_compute_global_metrics_totals_and_percentages() -> None:
+    rows = [
+        _kpi_row("/get", 8, 6, 2, 0, 100.0, 200.0),
+        _kpi_row("/status", 2, 0, 0, 2, 150.0, 300.0),
+    ]
+    metrics = compute_global_metrics(rows)
+    assert metrics.total_requests == 10
+    assert metrics.pct_success == pytest.approx(6 / 10)
+    assert metrics.pct_errors == pytest.approx(4 / 10)
+
+
+@pytest.mark.unit
+def test_compute_global_metrics_p90_is_weighted_average() -> None:
+    rows = [
+        _kpi_row("/get", 8, 8, 0, 0, 100.0, 200.0),
+        _kpi_row("/status", 2, 2, 0, 0, 150.0, 300.0),
+    ]
+    metrics = compute_global_metrics(rows)
+    expected = round((200.0 * 8 + 300.0 * 2) / 10, 2)
+    assert metrics.p90_global == pytest.approx(expected)
+
+
+@pytest.mark.unit
+def test_compute_global_metrics_rejects_empty_rows() -> None:
+    with pytest.raises(ValueError):
+        compute_global_metrics([])
