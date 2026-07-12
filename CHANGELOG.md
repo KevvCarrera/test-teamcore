@@ -6,6 +6,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Fase 2 — Scaffolding del paquete**: árbol completo `src/teamcore_http_kpi/`
+  (capas `domain`, `application`, `infrastructure`, `cli`) con módulos tipados
+  vacíos, listos para recibir la lógica de negocio en las fases siguientes.
+  - `config.py`: constantes tipadas (`Settings`, `FormData`) con los valores
+    fijos del enunciado (URL base, credenciales de prueba, datos de formulario).
+  - `logging_config.py`: logging estructurado a `stderr` (`setup_logging`),
+    sin `print()`, con soporte de formato `text`/`json`.
+  - Shims raíz (`cliente_http.py`, `generar_datos.py`, `calcular_kpi.py`,
+    `generar_reporte.py`) que delegan en el paquete instalado.
+  - Prueba de arquitectura que verifica que `domain` no importa librerías de
+    E/S, red o CLI (`requests`, `pandas`, `matplotlib`, `bs4`, `lxml`, `argparse`).
+  - Entorno virtual `.venv` e instalación editable con extras de desarrollo.
+  - `make check` (ruff + mypy --strict + pytest) en verde sobre el esqueleto.
+
 - **Fase 1 — Especificación (SDD) completa**, cubriendo las 4 partes del enunciado:
   - `CLAUDE.md` con reglas de trabajo y política estricta de Git.
   - Ingeniería de requisitos: FR-01…FR-17, NFR-01…NFR-14 y matriz de trazabilidad.
@@ -17,6 +31,11 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   - Especificaciones por componente SPEC-001…SPEC-005 con criterios de aceptación.
   - Estrategia de pruebas, casos de uso, runbook y plan de fases.
   - Scaffolding de proyecto: `pyproject.toml`, `Makefile`, `.gitignore` ampliado.
+
+### Corregido
+- Acotado el rango de `numpy` en `pyproject.toml` a `>=1.26,<2.3`: a partir de
+  `numpy==2.3` los stubs usan sintaxis PEP 695, incompatible con
+  `mypy --strict` bajo `python_version = "3.11"` (NFR-01).
 
 ### Ceñido al enunciado (sin invenciones)
 - Las CLIs exponen **solo** los parámetros del documento. Se eliminaron los flags/
@@ -34,5 +53,6 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   validación funcional de PDI la realiza el usuario en su instalación.
 
 ### Pendiente
-- Fases 2–10: implementación (incluye ETL PDI), verificación y cierre documental (ver
+- Fases 3–10: dominio, infraestructura, CLIs, cliente HTTP, reporte, ETL PDI,
+  verificación y cierre documental (ver
   [roadmap-and-phases.md](docs/project-plan/roadmap-and-phases.md)).

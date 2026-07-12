@@ -1,0 +1,34 @@
+# Documentación sin lenguaje técnico
+
+> Esta carpeta es el equivalente de `docs/` pero escrito para personas que
+> **no programan**. No sustituye a la documentación técnica (esa sigue siendo
+> la fuente de verdad para desarrollo); es una traducción a lenguaje simple de
+> lo mismo, para que cualquier persona del equipo entienda qué se construyó,
+> por qué, y cómo está organizado.
+
+## Cómo se mantiene
+
+Esta carpeta se actualiza **en cada unidad de trabajo cerrada** (cada fase o
+funcionalidad completada), al mismo tiempo que se actualizan `TODO.md` y
+`CHANGELOG.md` en la raíz del proyecto. Nunca queda desactualizada a
+propósito: si algo cambia en el código o en las carpetas, este espacio se
+revisa y se corrige en el mismo cambio.
+
+## Orden de lectura sugerido
+
+1. **[01-estructura-del-proyecto.md](01-estructura-del-proyecto.md)** — qué es
+   cada carpeta del repositorio y por qué existe.
+2. **[02-codigo-explicado.md](02-codigo-explicado.md)** — qué hace, línea por
+   línea, cada archivo de código que ya tiene contenido real.
+
+Según avancen las fases (ver [TODO.md](../../TODO.md)), se añadirán más
+documentos numerados aquí (por ejemplo, `03-...` para explicar la lógica de
+negocio de la Fase 3, `04-...` para los conectores de la Fase 4, etc.), cada
+uno enlazado desde este índice.
+
+## Qué NO vas a encontrar aquí
+
+- Detalles de implementación pensados para desarrolladores (eso vive en
+  `docs/` y en el propio código).
+- Decisiones ya cerradas y su porqué técnico exhaustivo — para eso están los
+  ADR en `docs/adr/`. Aquí se explica el "qué" y un "por qué" simplificado.

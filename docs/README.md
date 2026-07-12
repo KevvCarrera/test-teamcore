@@ -41,6 +41,7 @@ siguiendo Spec Driven Development (SDD). El código se implementa *después* y
 | Casos de uso | [use-cases.md](use-cases/use-cases.md) | UC-01…UC-04 |
 | Operación | [operations-runbook.md](runbook/operations-runbook.md) | Cómo ejecutar y diagnosticar |
 | Plan | [roadmap-and-phases.md](project-plan/roadmap-and-phases.md) | Fases y entregables |
+| Sin lenguaje técnico | [no-tecnico/README.md](no-tecnico/README.md) | Traducción a lenguaje simple de la estructura y el código, para perfiles no técnicos |
 
 ## Convenciones de la documentación
 

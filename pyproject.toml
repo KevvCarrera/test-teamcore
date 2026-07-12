@@ -23,7 +23,7 @@ dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
     "lxml>=5.1",
-    "numpy>=1.26",
+    "numpy>=1.26,<2.3",  # 2.3+ requiere sintaxis PEP 695 en sus stubs (rompe mypy con python_version=3.11)
     "pandas>=2.1",
     "matplotlib>=3.8",
 ]
