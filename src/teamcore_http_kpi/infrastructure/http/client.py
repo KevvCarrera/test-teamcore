@@ -1,10 +1,6 @@
-"""`RequestsHttpClient`: un cliente HTTP con sesión compartida y reintentos.
-
-La sesión es una sola para los 6 escenarios, así las cookies que se fijan en
-uno siguen disponibles en el siguiente sin ningún esfuerzo extra. Ante
-timeouts o errores 5xx, reintenta con backoff exponencial; ante un 403 hace
-lo mismo si así se configura, y si los reintentos se agotan, avisa con
-`AccessForbiddenError` en vez de devolver la respuesta denegada como si nada.
+"""`RequestsHttpClient`: un cliente HTTP con sesión compartida y reintentos con
+backoff exponencial. Si se agotan los reintentos ante un 403, lanza
+`AccessForbiddenError`.
 """
 
 import logging

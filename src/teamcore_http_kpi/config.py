@@ -1,10 +1,4 @@
-"""Configuración del proyecto, como constantes tipadas en lugar de `.env`.
-
-Los valores por defecto son los que trae el propio enunciado (URL base,
-credenciales de prueba, datos del formulario) — no hay nada que inventar ni
-nada que ocultar en variables de entorno. Las pruebas que necesiten otros
-valores simplemente construyen su propio `Settings(...)`.
-"""
+"""Configuración del proyecto, como constantes tipadas en lugar de `.env`."""
 
 from dataclasses import dataclass
 
@@ -21,10 +15,8 @@ class FormData:
 
 @dataclass(frozen=True)
 class Settings:
-    """Configuración del cliente HTTP: URL base, credenciales y política de reintentos.
-
-    Las credenciales son las de prueba que da el enunciado, no secretos
-    reales, así que no pasa nada por tenerlas aquí como texto plano.
+    """Configuración del cliente HTTP: URL base, credenciales de prueba (no
+    secretos reales) y política de reintentos.
     """
 
     base_url: str = "https://httpbin.org"

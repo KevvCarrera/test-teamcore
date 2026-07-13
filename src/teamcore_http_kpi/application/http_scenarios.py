@@ -1,8 +1,7 @@
 """Orquestación de los 6 escenarios del cliente HTTP.
 
-`run_all` los ejecuta en orden, todos sobre la misma sesión HTTP. Si uno
-falla, se registra y se sigue con el siguiente — nadie se queda esperando a
-que los 6 salgan perfectos para saber cómo les fue a los demás.
+`run_all` los ejecuta en orden sobre la misma sesión HTTP; si uno falla, se
+registra y se continúa con el resto.
 """
 
 import logging

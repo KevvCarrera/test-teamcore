@@ -1,17 +1,9 @@
 """`SeleniumHttpClient`: adaptador alternativo de `HttpPort` sobre un navegador real.
 
-Ver docs/adr/0014-selenium-adapter-as-alternative.md para el porqué y las
-limitaciones documentadas. **No es el cliente por defecto** — `cliente_http.py`
-sigue usando `RequestsHttpClient` (Fase 6); esto demuestra un uso real de
-Selenium sin arriesgar la solución ya probada.
-
-En vez de navegar directamente a cada URL (lo que haría que Chrome/Edge
-"re-renderizaran" el JSON o el XML en su propio visor interno, corrompiendo
-el contenido crudo que hace falta parsear), cada llamada ejecuta un
-`fetch()` real **dentro del navegador**, vía `execute_async_script`, y lee el
-resultado desde Python. Sigue siendo el navegador quien hace la petición —
-con su propio motor de red, cookies y redirecciones — solo que se lee el
-resultado de una forma que no depende de cómo Chrome decide mostrarlo.
+Ver docs/adr/0014-selenium-adapter-as-alternative.md. No es el cliente por
+defecto (`cliente_http.py` usa `RequestsHttpClient`). Cada llamada ejecuta un
+`fetch()` dentro del navegador (vía `execute_async_script`) en vez de navegar
+directamente, para no dejar que Chrome/Edge re-renderice el JSON/XML.
 """
 
 import base64
@@ -54,10 +46,8 @@ class SeleniumDriver(Protocol):
 class _SeleniumResponse:
     """Respuesta obtenida vía `fetch()` dentro de un navegador real.
 
-    `headers` siempre vacío y `history` es, a lo sumo, una entrada
-    sintética: son limitaciones de usar `fetch()` desde el navegador (ver
-    ADR-0014), no datos que se puedan recuperar de otra forma sin
-    comprometer el resto del contenido.
+    `headers` siempre vacío, `history` a lo sumo una entrada sintética
+    (limitaciones de `fetch()` desde el navegador, ver ADR-0014).
     """
 
     def __init__(self, status_code: int, text: str, *, redirected: bool = False) -> None:
@@ -86,12 +76,8 @@ class _SeleniumResponse:
 
 
 class SeleniumHttpClient:
-    """Cliente HTTP alternativo: un navegador real controlado por Selenium.
-
-    Implementa el mismo `HttpPort` que `RequestsHttpClient`, con la misma
-    política de reintentos y los mismos errores de dominio — las funciones
-    de `infrastructure/http/tasks.py` funcionan igual con cualquiera de los
-    dos adaptadores, sin cambiar una línea.
+    """Cliente HTTP alternativo: un navegador real controlado por Selenium,
+    implementando el mismo `HttpPort` que `RequestsHttpClient`.
     """
 
     def __init__(

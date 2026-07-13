@@ -2,6 +2,9 @@
 
 - **Estado:** Aceptado
 - **Fecha:** 2026-07-10
+- **Nota:** el rango soportado (`>=3.11`, sin techo) se verificó explícitamente
+  contra Python 3.12/3.13/3.14 en [ADR-0015](0015-python-3-13-3-14-compatibility.md),
+  que también ajusta el pin de `numpy` por compatibilidad de wheels/mypy.
 
 ## Contexto
 

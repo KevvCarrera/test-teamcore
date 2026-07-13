@@ -1,8 +1,6 @@
 """`python cliente_http.py`: corre los 6 escenarios contra httpbin.org.
 
-Sin parámetros: el enunciado no define flags para esta parte. Todo lo
-necesario (URL base, credenciales de prueba, datos del formulario) ya vive
-en `config.DEFAULT_SETTINGS`.
+Sin parámetros; usa `config.DEFAULT_SETTINGS`.
 """
 
 import logging

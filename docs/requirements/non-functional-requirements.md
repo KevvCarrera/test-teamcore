@@ -23,8 +23,8 @@ estándares de ingeniería que este proyecto adopta para alcanzar nivel producci
 
 ## Atributos de calidad priorizados
 
-Orden de prioridad cuando haya conflicto entre atributos (deriva de las prioridades
-que fijó el usuario):
+Orden de prioridad cuando haya conflicto entre atributos (deriva de los estándares
+de calidad de código fijados en `CLAUDE.md`, sección 3):
 
 1. **Mantenibilidad** y **testabilidad** (base de todo lo demás).
 2. **Simplicidad** (KISS/YAGNI) por encima de flexibilidad especulativa.

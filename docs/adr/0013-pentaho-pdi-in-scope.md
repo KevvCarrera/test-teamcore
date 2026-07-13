@@ -48,15 +48,15 @@ entregables en `etl_pdi/`:
 - (−) Introduce un toolchain no-Python (PDI/Kettle, JVM). Es un entregable separado en
   `etl_pdi/`, no una dependencia del paquete Python.
 
-## Notas de interpretación (a confirmar con el usuario)
+## Notas de interpretación
 
 - **Versión de PDI:** se apunta a un formato compatible con PDI 9.x (ampliamente
-  estable). Si el usuario usa otra versión, se ajusta.
+  estable). Con otra versión instalada, puede requerir un ajuste menor.
 - **Verificación de carga (enunciado 2.2.2):** el texto pide comprobar que «el número
   de filas cargadas coincide con la suma de `success_2xx`, `client_4xx` y
   `server_5xx`». Se implementa la verificación **tal como la describe el enunciado**
-  (consulta SQL explícita) y se deja documentado el matiz semántico en
-  [SPEC-005](../specs/SPEC-005-etl-pdi.md) para su revisión.
+  (consulta SQL explícita); el matiz semántico queda documentado en
+  [SPEC-005](../specs/SPEC-005-etl-pdi.md).
 
 ## Alternativas consideradas
 

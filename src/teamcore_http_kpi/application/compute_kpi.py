@@ -19,10 +19,8 @@ def run(
 ) -> int:
     """Lee `input_path`, agrega los KPIs y los escribe en `output_path`.
 
-    Si el archivo no existe, el repositorio ya lanza `InputFileNotFoundError`.
-    Si existe pero no queda ningún registro válido tras descartar las líneas
-    corruptas, se aborta con `DataInputError` en vez de escribir un CSV vacío
-    en silencio. Devuelve el número de filas de KPI escritas.
+    Aborta con `DataInputError` si no queda ningún registro válido.
+    Devuelve el número de filas de KPI escritas.
     """
     records = list(bitacora_repository.read(input_path))
     if not records:

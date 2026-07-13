@@ -21,9 +21,8 @@ def run(
 ) -> int:
     """Genera `n_registros` y los escribe en `salida`. Devuelve cuántos se escribieron.
 
-    `ref_utc` no es un parámetro de la CLI (el enunciado no lo pide): se usa
-    `datetime.now(UTC)` en producción, y las pruebas pasan un valor fijo aquí
-    mismo para poder comparar resultados.
+    `ref_utc` no es un parámetro de CLI; por defecto usa `datetime.now(UTC)`,
+    y las pruebas pasan un valor fijo.
     """
     if n_registros <= 0:
         raise ConfigError(f"--n_registros debe ser mayor que 0 (recibido: {n_registros})")

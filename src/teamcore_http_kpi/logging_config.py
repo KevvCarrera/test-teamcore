@@ -1,9 +1,5 @@
-"""Configuración de logging.
-
-Los logs van siempre a `stderr`, para no mezclarse con los datos que cada
-script escribe en ficheros o en `stdout`. Cada CLI llama a `setup_logging(...)`
-una única vez, al arrancar. Nada de `print()` para diagnóstico, y nunca se
-registran credenciales.
+"""Configuración de logging. Los logs van a `stderr` para no mezclarse con los
+datos que cada script escribe en `stdout`/ficheros.
 """
 
 import logging

@@ -5,10 +5,11 @@
 
 ## Contexto
 
-El usuario pide aplicar Clean Architecture *y* KISS/YAGNI. Ambos objetivos están en
-tensión: una Clean Architecture "de manual" (entidades, casos de uso, gateways,
-presenters, DTOs en cada frontera, contenedor de DI) sería sobre-ingeniería para
-tres scripts CLI y un cliente HTTP. Pero un único módulo monolítico dañaría la
+El proyecto exige aplicar Clean Architecture *y* KISS/YAGNI (ver `CLAUDE.md`,
+sección 3). Ambos objetivos están en tensión: una Clean Architecture "de manual"
+(entidades, casos de uso, gateways, presenters, DTOs en cada frontera, contenedor
+de DI) sería sobre-ingeniería para tres scripts CLI y un cliente HTTP. Pero un
+único módulo monolítico dañaría la
 testabilidad y la separación de responsabilidades.
 
 ## Decisión
@@ -39,4 +40,5 @@ mantiene y se puede verificar con una prueba de arquitectura.
 
 - **Clean Architecture completa:** rechazada por sobre-ingeniería para el tamaño.
 - **Scripts planos sin capas:** rechazado; comprometería testabilidad y
-  mantenibilidad (objetivos prioritarios del usuario).
+  mantenibilidad, ambos objetivos prioritarios del proyecto (regla 9 de
+  `CLAUDE.md`).

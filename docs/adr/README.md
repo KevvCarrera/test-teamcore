@@ -21,3 +21,4 @@ Formato: basado en [Michael Nygard](https://cognitect.com/blog/2011/11/15/docume
 | [0012](0012-dependency-boundary-allowed-libraries.md) | Frontera de librerías permitidas | Aceptado |
 | [0013](0013-pentaho-pdi-in-scope.md) | Pentaho/PDI dentro del alcance | Aceptado |
 | [0014](0014-selenium-adapter-as-alternative.md) | Adaptador Selenium real como alternativa a `requests` | Aceptado |
+| [0015](0015-python-3-13-3-14-compatibility.md) | Compatibilidad verificada con Python 3.13/3.14 y ajuste del pin de `numpy` | Aceptado |

@@ -3,6 +3,7 @@
 #   docs/adr/0002-runtime-python-and-packaging.md
 #   docs/adr/0011-testing-strategy-and-tooling.md
 #   docs/adr/0012-dependency-boundary-allowed-libraries.md
+#   docs/adr/0015-python-3-13-3-14-compatibility.md
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -24,7 +25,10 @@ dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
     "lxml>=5.1",
-    "numpy>=1.26,<2.3",  # 2.3+ requiere sintaxis PEP 695 en sus stubs (rompe mypy con python_version=3.11)
+    # Rango elegido para dar soporte a Python 3.11-3.14 (ver ADR-0015):
+    # <2.3.5 no publica wheels Windows para cp313/cp314; >=2.5 usa `type` (PEP 695)
+    # en sus stubs, lo que rompe mypy con python_version=3.11.
+    "numpy>=2.3.5,<2.5",
     "pandas>=2.1",
     "matplotlib>=3.8",
     "selenium>=4.20",

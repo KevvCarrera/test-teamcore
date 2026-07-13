@@ -93,9 +93,9 @@ suma de `success_2xx`, `client_4xx` y `server_5xx`». Literalmente, el número d
 = número de grupos `(date_utc, endpoint_base)`, mientras que esa suma = total de
 solicitudes clasificadas; ambos coinciden solo si hubiera una solicitud por grupo. Se
 implementa la verificación **tal como la describe el enunciado** (consulta SQL
-explícita) y se deja documentado el matiz para revisión del usuario; si se desea una
-verificación de integridad alternativa (p. ej. `SUM(requests_total)` esperado vs.
-cargado), se ajusta bajo su confirmación.
+explícita); el matiz queda documentado aquí. Una verificación de integridad
+alternativa (p. ej. `SUM(requests_total)` esperado vs. cargado) queda como
+opción futura si se decide revisar este criterio.
 
 ## 6. Criterios de aceptación
 

@@ -11,33 +11,16 @@ from teamcore_http_kpi.domain.models import BitacoraRecord, GlobalMetrics, KpiRo
 
 
 def percentile_90(values: Sequence[float]) -> float:
-    """Percentil 90 de un conjunto de latencias, vía `numpy.percentile`.
-
-    El p90 responde a la pregunta "¿cuánto tardó el 90 % de las llamadas, o
-    menos?" — es una medida de la cola de latencia, y aguanta mucho mejor un
-    par de valores atípicos que el promedio simple. Se delega el cálculo en
-    `numpy` (interpolación lineal por defecto) en vez de reimplementar la
-    fórmula a mano.
-
-    El resultado se devuelve sin redondear; `aggregate` decide el redondeo a
-    2 decimales al construir cada fila del CSV.
-    """
+    """Percentil 90 de un conjunto de latencias (`numpy.percentile`, sin redondear)."""
     if not values:
         raise ValueError("No se puede calcular el percentil 90 de una secuencia vacía")
     return float(np.percentile(values, 90))
 
 
 def aggregate(records: Iterable[BitacoraRecord]) -> list[KpiRow]:
-    """Agrupa registros por día y endpoint, y calcula sus KPIs.
+    """Agrupa registros por `(date_utc, endpoint_base)` y calcula sus KPIs.
 
-    Cada grupo es una combinación de `date_utc` (la fecha de `timestamp_utc`,
-    sin la hora) y `endpoint_base` (vía `normalize_endpoint`). Por grupo se
-    cuentan las respuestas por rango de estado, los errores de parseo, y se
-    calcula el promedio y el percentil 90 de la latencia.
-
-    Las filas salen ordenadas por `(date_utc, endpoint_base)`: así, correr
-    esto dos veces con la misma entrada da siempre el mismo CSV, línea por
-    línea.
+    Las filas salen ordenadas para que la salida sea determinista.
     """
     groups: dict[tuple[date, str], list[BitacoraRecord]] = defaultdict(list)
     for record in records:
@@ -53,15 +36,11 @@ def aggregate(records: Iterable[BitacoraRecord]) -> list[KpiRow]:
 
 
 def compute_global_metrics(rows: Sequence[KpiRow]) -> GlobalMetrics:
-    """Calcula los números globales que encabezan el reporte HTML.
+    """Calcula los números globales del reporte HTML.
 
-    `pct_success` y `pct_errors` son fracciones entre 0 y 1 (quien los
-    muestra decide multiplicarlos por 100). El caso curioso es `p90_global`:
-    para cuando llegamos aquí, los datos ya están agregados por grupo, así
-    que ya no tenemos las latencias individuales para sacar un percentil de
-    verdad. Lo que se hace en su lugar es una media del `p90_elapsed_ms` de
-    cada grupo, ponderada por su `requests_total` — una aproximación
-    razonable, no un percentil recalculado desde cero.
+    `pct_success`/`pct_errors` son fracciones [0, 1]. `p90_global` es un
+    promedio de `p90_elapsed_ms` ponderado por `requests_total`, no un
+    percentil recalculado desde cero.
     """
     if not rows:
         raise ValueError("No se pueden calcular métricas globales sin filas de KPI")

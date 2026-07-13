@@ -1,10 +1,7 @@
 """Los tres modelos de datos del dominio: fichas inmutables, sin lógica propia.
 
-Un detalle para quien busque `FormData` aquí: la especificación de la
-estructura de carpetas la menciona como parte de este módulo, pero ya vive en
-`config.py` con el mismo propósito (los datos del formulario de prueba), y el
-puerto HTTP (`HttpPort.post`) recibe un `Mapping[str, str]` plano, no un tipo
-de dominio. Duplicarla aquí solo habría añadido confusión.
+`FormData` vive en `config.py`, no aquí; `HttpPort.post` recibe un
+`Mapping[str, str]` plano.
 """
 
 from dataclasses import dataclass
@@ -13,11 +10,7 @@ from datetime import date, datetime
 
 @dataclass(frozen=True)
 class BitacoraRecord:
-    """Una llamada HTTP simulada: la versión en memoria de una línea de `datos.jsonl`.
-
-    Convertir esto a JSON (con el `Z` final del timestamp incluido) es tarea
-    de la capa de E/S, no de este modelo.
-    """
+    """Una llamada HTTP simulada: la versión en memoria de una línea de `datos.jsonl`."""
 
     timestamp_utc: datetime
     endpoint: str

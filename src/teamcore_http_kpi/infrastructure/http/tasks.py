@@ -1,10 +1,5 @@
-"""Los 6 escenarios contra httpbin.org: auth básica, cookies, 403, las tres
-extracciones (JSON/XML/HTML), formulario y redirección.
-
-Cada función hace su llamada, valida el resultado y devuelve una frase corta
-de éxito; si algo no sale como se espera, levanta `HttpTaskError` (o su
-subtipo `AccessForbiddenError`) para que `application.http_scenarios` decida
-qué hacer con ese fallo.
+"""Los 6 escenarios contra httpbin.org: auth básica, cookies, 403, extracciones
+JSON/XML/HTML, formulario y redirección.
 """
 
 from html import escape
@@ -63,11 +58,8 @@ def extract_json(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
 def extract_xml(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
     """Parsea el XML de `/xml` y lo guarda, bien formado, en `datos.xml` (FR-05).
 
-    Se parsea con `lxml.etree` y se vuelve a serializar (en vez de escribir
-    `response.content` tal cual) a propósito: así queda comprobado que el XML
-    recibido es válido (si no lo fuera, `etree.fromstring` ya habría lanzado
-    antes de llegar a escribir el archivo), y el resultado queda con una
-    declaración XML explícita y codificación UTF-8 consistente.
+    Se reserializa en vez de escribir `response.content` tal cual, para
+    validar el XML y normalizar declaración/encoding.
     """
     response = http.get("/xml")
     root = etree.fromstring(response.content)
@@ -78,14 +70,9 @@ def extract_xml(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
 
 
 def extract_html_title(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
-    """Extrae el título (o el encabezado principal) de `/html` (FR-06).
+    """Extrae el título (o el encabezado principal, como fallback) de `/html` (FR-06).
 
-    Primero busca `<title>`; si la página no tuviera uno (no es el caso de
-    `httpbin.org/html`, pero es una entrada externa y no se controla), cae
-    al primer `<h1>` como alternativa razonable antes de rendirse. El título
-    se escapa (`html.escape`) antes de reinsertarlo en el `titulo.html` de
-    salida, porque viene de una respuesta externa: es un dato, no algo que
-    deba interpretarse como HTML de confianza.
+    Se escapa antes de escribirlo: viene de una fuente externa no confiable.
     """
     response = http.get("/html")
     soup = BeautifulSoup(response.text, "lxml")

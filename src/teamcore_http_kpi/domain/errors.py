@@ -1,9 +1,4 @@
-"""Los errores propios del proyecto, organizados por tipo de problema.
-
-Nada de `except:` desnudo ni de tragarse excepciones en silencio en el resto
-del código: cada fallo se maneja a través de alguno de estos tipos, para que
-sea obvio qué salió mal y con qué código de salida termina la CLI.
-"""
+"""Errores propios del proyecto, organizados por tipo de problema."""
 
 from pathlib import Path
 

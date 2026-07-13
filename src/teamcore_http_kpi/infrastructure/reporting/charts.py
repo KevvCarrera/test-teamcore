@@ -1,8 +1,5 @@
-"""`MatplotlibChartRenderer`: dibuja los dos gráficos del reporte como PNG.
-
-Se usa el backend `Agg` porque no hay pantalla detrás (esto puede correr en
-un servidor sin monitor). Los PNG no se guardan como archivo: se devuelven
-como bytes, para que `html_report.py` los incruste directamente en el HTML.
+"""`MatplotlibChartRenderer`: dibuja los dos gráficos del reporte como PNG
+(bytes, no archivos). Usa el backend `Agg` (headless).
 """
 
 import io

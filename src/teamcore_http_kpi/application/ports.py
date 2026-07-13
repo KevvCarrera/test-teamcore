@@ -1,10 +1,4 @@
-"""Los "enchufes" entre `application` e `infrastructure`.
-
-Se definen como `Protocol` (tipado estructural): cualquier clase que tenga
-estos mismos métodos encaja como adaptador, sin necesidad de heredar de nada.
-Así se puede cambiar, por ejemplo, cómo se guarda el CSV sin tocar el resto
-del sistema, siempre que el reemplazo respete esta misma forma.
-"""
+"""Puertos entre `application` e `infrastructure`, como `Protocol` (tipado estructural)."""
 
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
@@ -16,10 +10,9 @@ from teamcore_http_kpi.domain.models import BitacoraRecord, GlobalMetrics, KpiRo
 class HttpResponse(Protocol):
     """Lo mínimo que necesitamos de una respuesta HTTP, sin atarnos a `requests`.
 
-    `text`, `content`, `headers` e `history` se declaran como propiedades de
-    solo lectura porque así son en `requests.Response`: si se declararan como
-    atributos simples, mypy exigiría que también fueran modificables, y
-    `Response` dejaría de conformar este puerto.
+    Son propiedades de solo lectura (como en `requests.Response`); si fueran
+    atributos simples, mypy exigiría que fueran modificables y `Response` no
+    conformaría el puerto.
     """
 
     status_code: int

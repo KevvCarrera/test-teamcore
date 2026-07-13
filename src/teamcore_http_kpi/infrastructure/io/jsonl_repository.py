@@ -19,12 +19,8 @@ class JsonlBitacoraRepository:
     """Adaptador de `BitacoraRepository` sobre archivos JSON Lines (UTF-8)."""
 
     def write(self, records: Iterable[BitacoraRecord], destination: Path) -> int:
-        """Escribe `records` en `destination`, una línea JSON por registro.
-
-        Si la carpeta no existe la crea, y si el archivo ya existía lo
-        reemplaza entero: correr esto dos veces da siempre el mismo
-        resultado, sin ir acumulando líneas de corridas anteriores.
-        Devuelve cuántos registros se escribieron.
+        """Escribe `records` en `destination`, una línea JSON por registro
+        (reemplaza el archivo si ya existía). Devuelve cuántos se escribieron.
         """
         destination.parent.mkdir(parents=True, exist_ok=True)
         count = 0
@@ -36,13 +32,10 @@ class JsonlBitacoraRepository:
         return count
 
     def read(self, source: Path) -> Iterator[BitacoraRecord]:
-        """Lee `source` línea por línea, sin cargar el archivo entero en memoria.
+        """Lee `source` línea por línea (sin cargar todo en memoria).
 
-        Si `source` no existe, lanza `InputFileNotFoundError`. Si una línea
-        está mal formada o le faltan campos, en cambio, no se aborta: se
-        avisa con un `WARNING` (con el número de línea) y se sigue con la
-        siguiente. Decidir qué hacer si el archivo termina sin ningún
-        registro válido le toca a quien llame a esto, no a este método.
+        Lanza `InputFileNotFoundError` si no existe. Líneas mal formadas se
+        registran con `WARNING` y se saltan, en vez de abortar.
         """
         if not source.exists():
             raise InputFileNotFoundError(source)

@@ -35,7 +35,7 @@ cubrir.
 
 | Req | Dónde se satisface | Verificación |
 |---|---|---|
-| NFR-01 Python 3.11+ | `pyproject.toml` (`requires-python`) | CI |
+| NFR-01 Python 3.11+ | `pyproject.toml` (`requires-python`), [ADR-0015](../adr/0015-python-3-13-3-14-compatibility.md) | CI |
 | NFR-02 Frontera de deps | `pyproject.toml`, [ADR-0012](../adr/0012-dependency-boundary-allowed-libraries.md) | revisión |
 | NFR-03 Robustez | `domain/errors.py`, política de errores por spec | `tests/**/test_*errors*` |
 | NFR-04 Legibilidad | Arquitectura por capas, funciones puras | `ruff`, revisión |

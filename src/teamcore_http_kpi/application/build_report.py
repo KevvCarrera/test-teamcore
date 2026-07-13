@@ -1,9 +1,4 @@
-"""Caso de uso de `generar_reporte.py`: arma el reporte HTML de KPIs.
-
-Lee el CSV de KPIs, calcula las métricas globales, dibuja los dos gráficos y
-ensambla el HTML final autocontenido — todo a través de los puertos, sin
-saber si detrás hay un CSV real o un doble de prueba.
-"""
+"""Caso de uso de `generar_reporte.py`: arma el reporte HTML de KPIs."""
 
 import logging
 from pathlib import Path
@@ -30,10 +25,7 @@ def run(
 ) -> None:
     """Genera el reporte HTML en `output_path` a partir del CSV en `input_path`.
 
-    Si el CSV existe pero no tiene ninguna fila, se aborta con
-    `DataInputError` en vez de escribir un reporte vacío en silencio (el
-    archivo inexistente o con columnas faltantes ya lo señala el propio
-    `kpi_repository`).
+    Aborta con `DataInputError` si el CSV no tiene ninguna fila.
     """
     rows = kpi_repository.read(input_path)
     if not rows:

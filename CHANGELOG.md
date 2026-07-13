@@ -223,9 +223,14 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   503 sostenido terminaba tumbando toda la CLI con un traceback sin
   controlar, en vez de marcarse como fallido y dejar correr a los demás.
   Corregido con una prueba de regresión.
-- Acotado el rango de `numpy` en `pyproject.toml` a `>=1.26,<2.3`: a partir de
-  `numpy==2.3` los stubs usan sintaxis PEP 695, incompatible con
-  `mypy --strict` bajo `python_version = "3.11"` (NFR-01).
+- **Verificada la compatibilidad con Python 3.13/3.14** (ADR-0015) sin romper
+  3.11: `numpy<2.3.5` no publica wheels Windows para `cp313`/`cp314` (falla al
+  compilar el sdist sin compilador C), así que el rango de `numpy` en
+  `pyproject.toml` pasó de `>=1.26,<2.3` a `>=2.3.5,<2.5`. El techo `<2.5` se
+  mantiene por el mismo motivo original: `numpy>=2.5` usa sintaxis PEP 695
+  (`type ...`) en sus stubs, incompatible con `mypy --strict` bajo
+  `python_version = "3.11"` (NFR-01). Verificado con `pytest`/`ruff`/`mypy` en
+  entornos aislados de Python 3.12 y 3.14.
 
 ### Ceñido al enunciado (sin invenciones)
 - Las CLIs exponen **solo** los parámetros del documento. Se eliminaron los flags/
