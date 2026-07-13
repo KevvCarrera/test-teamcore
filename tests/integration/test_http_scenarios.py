@@ -113,3 +113,41 @@ def test_one_failure_does_not_stop_the_rest(tmp_out: Path) -> None:
     assert by_name["Autenticación básica"].ok is False
     assert by_name["Cookies y sesión"].ok is True
     assert (tmp_out / "datos.json").exists()  # el resto de escenarios sí corrió
+
+
+@pytest.mark.integration
+@responses.activate
+def test_a_failed_scenario_never_logs_the_password(
+    tmp_out: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    # Mismo registro que test_one_failure_does_not_stop_the_rest: /basic-auth falla.
+    responses.add(
+        responses.GET,
+        f"{_BASE_URL}/basic-auth/{_SETTINGS.basic_auth_user}/{_SETTINGS.basic_auth_password}",
+        json={"authenticated": False},
+        status=401,
+    )
+    responses.add(responses.GET, f"{_BASE_URL}/cookies/set", status=200)
+    responses.add(
+        responses.GET, f"{_BASE_URL}/cookies", json={"cookies": {"session": "activa"}}, status=200
+    )
+    for _ in range(4):
+        responses.add(responses.GET, f"{_BASE_URL}/status/403", status=403)
+    responses.add(responses.GET, f"{_BASE_URL}/get", json={"args": {}}, status=200)
+    responses.add(responses.GET, f"{_BASE_URL}/xml", body=b"<slideshow title='S'/>", status=200)
+    responses.add(
+        responses.GET, f"{_BASE_URL}/html", body="<html><title>T</title></html>", status=200
+    )
+    responses.add(responses.POST, f"{_BASE_URL}/post", json={"form": {}}, status=200)
+    responses.add(
+        responses.GET,
+        f"{_BASE_URL}/redirect-to",
+        status=302,
+        headers={"Location": f"{_BASE_URL}/get"},
+    )
+    responses.add(responses.GET, f"{_BASE_URL}/get", json={"args": {}}, status=200)
+
+    with caplog.at_level("WARNING"):
+        run_all(_client(), FileSystemArtifactWriter(), _SETTINGS, tmp_out)
+
+    assert _SETTINGS.basic_auth_password not in caplog.text

@@ -71,6 +71,15 @@ def test_read_raises_when_file_missing(tmp_out: Path) -> None:
 
 
 @pytest.mark.integration
+def test_read_raises_data_input_error_when_file_is_truly_empty(tmp_out: Path) -> None:
+    destination = tmp_out / "kpi.csv"
+    destination.write_text("", encoding="utf-8")
+
+    with pytest.raises(DataInputError):
+        CsvKpiRepository().read(destination)
+
+
+@pytest.mark.integration
 def test_read_raises_data_input_error_when_column_missing(tmp_out: Path) -> None:
     destination = tmp_out / "kpi.csv"
     destination.write_text("date_utc,endpoint_base,requests_total\n2026-07-09,/get,42\n", "utf-8")

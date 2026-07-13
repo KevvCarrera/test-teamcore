@@ -61,7 +61,14 @@ def extract_json(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
 
 
 def extract_xml(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
-    """Parsea el XML de `/xml` y lo guarda, bien formado, en `datos.xml` (FR-05)."""
+    """Parsea el XML de `/xml` y lo guarda, bien formado, en `datos.xml` (FR-05).
+
+    Se parsea con `lxml.etree` y se vuelve a serializar (en vez de escribir
+    `response.content` tal cual) a propósito: así queda comprobado que el XML
+    recibido es válido (si no lo fuera, `etree.fromstring` ya habría lanzado
+    antes de llegar a escribir el archivo), y el resultado queda con una
+    declaración XML explícita y codificación UTF-8 consistente.
+    """
     response = http.get("/xml")
     root = etree.fromstring(response.content)
     sample = root.get("title", root.tag)
@@ -71,7 +78,15 @@ def extract_xml(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
 
 
 def extract_html_title(http: HttpPort, writer: ArtifactWriter, out_dir: Path) -> str:
-    """Extrae el título (o el encabezado principal) de `/html` (FR-06)."""
+    """Extrae el título (o el encabezado principal) de `/html` (FR-06).
+
+    Primero busca `<title>`; si la página no tuviera uno (no es el caso de
+    `httpbin.org/html`, pero es una entrada externa y no se controla), cae
+    al primer `<h1>` como alternativa razonable antes de rendirse. El título
+    se escapa (`html.escape`) antes de reinsertarlo en el `titulo.html` de
+    salida, porque viene de una respuesta externa: es un dato, no algo que
+    deba interpretarse como HTML de confianza.
+    """
     response = http.get("/html")
     soup = BeautifulSoup(response.text, "lxml")
 

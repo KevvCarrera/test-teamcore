@@ -3,6 +3,10 @@
 Guía práctica para ejecutar, diagnosticar y resolver problemas. Orientado a Windows
 (PowerShell), con equivalentes POSIX.
 
+> Para instrucciones de **cómo verificar/probar** cada paso del enunciado
+> (qué prueba automatizada lo cubre y cómo comprobarlo a mano), ver
+> [guia-de-pruebas-por-paso.md](../testing/guia-de-pruebas-por-paso.md).
+
 ## 1. Requisitos previos
 
 - Python **3.11+** (`python --version`).
@@ -96,19 +100,31 @@ El artefacto `out/kpi_por_endpoint_dia.csv` es la **entrada** del ETL de PDI
 # 1. Preparar la base y las tablas (una vez)
 sqlite3 etl_pdi/db/kpi.sqlite < etl_pdi/sql/ddl.sql
 
-# 2. Configurar la conexión
-cp etl_pdi/config/kettle.properties.example ~/.kettle/kettle.properties  # o ajustar ruta
-
-# 3. Ejecutar el job (línea de comandos) o abrir en Spoon
-kitchen.sh -file=etl_pdi/j_daily_kpi.kjb -level=Basic     # Linux/macOS
-Kitchen.bat /file:etl_pdi\j_daily_kpi.kjb /level:Basic    # Windows
-
-# 4. Verificar la carga
-sqlite3 etl_pdi/db/kpi.sqlite "SELECT COUNT(*) FROM fct_kpi_endpoint_dia;"
+# 2. Ejecutar el job (línea de comandos) o abrir en Spoon
+kitchen.sh -file=etl_pdi/j_daily_kpi.kjb -level=Basic       # Linux/macOS
+```
+```powershell
+& "<ruta_a_pdi>\Kitchen.bat" "-file=etl_pdi\j_daily_kpi.kjb" "-level=Basic"   # Windows
 ```
 
-> Los ficheros `.ktr`/`.kjb` se entregan estructuralmente correctos pero **no se
-> ejecutaron/validaron** en el entorno de desarrollo (sin Spoon/Kitchen). La
-> validación funcional se realiza aquí, en tu instalación de PDI. No modificar el
-> esquema del CSV sin seguir el
-> [versionado del contrato](../contracts/data-contracts.md#versionado).
+```bash
+# 3. Verificar la carga
+sqlite3 etl_pdi/db/kpi.sqlite "SELECT COUNT(*) FROM fct_kpi_endpoint_dia;"
+sqlite3 etl_pdi/db/kpi.sqlite "SELECT * FROM etl_log ORDER BY run_at DESC LIMIT 1;"
+```
+
+> Nota de sintaxis (Windows): la forma correcta del flag es `-file=...`
+> (con `=`, sin espacio), no `/file:...` — la segunda no la reconocen
+> `Kitchen.bat`/`Pan.bat`. Si `NoDefaultCurrentDirectoryInExePath` está activo,
+> agrega la carpeta de instalación de PDI a `$env:Path` antes de invocarlos
+> (ver [etl_pdi/README.md](../../etl_pdi/README.md) para el detalle completo).
+
+> **Estos ficheros ya se validaron contra una instalación real** de Pentaho
+> Data Integration 9.4 (`Pan.bat`/`Kitchen.bat`): carga correcta de 28 filas,
+> Truncate idempotente (dos corridas seguidas sin duplicar), y camino de error
+> probado forzando un CSV ausente. Detalle completo, incluidos 3 problemas
+> reales encontrados y corregidos durante esa validación, en
+> [etl_pdi/README.md](../../etl_pdi/README.md). No modificar el esquema del
+> CSV sin seguir el
+> [versionado del contrato](../contracts/data-contracts.md#versionado) —
+> y volver a probar contra PDI real tras cualquier cambio en `t_load_kpi.ktr`.

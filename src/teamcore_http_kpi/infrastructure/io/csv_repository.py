@@ -5,6 +5,8 @@ from collections.abc import Sequence
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
+
 from teamcore_http_kpi.domain.errors import DataInputError, InputFileNotFoundError
 from teamcore_http_kpi.domain.models import KpiRow
 
@@ -38,13 +40,31 @@ class CsvKpiRepository:
                 writer.writerow(_to_payload(row))
 
     def read(self, source: Path) -> list[KpiRow]:
-        """Carga el CSV completo en memoria. Lanza `InputFileNotFoundError` si no existe."""
+        """Carga el CSV completo con `pandas` (tal como pide el enunciado para el reporte).
+
+        Lanza `InputFileNotFoundError` si no existe, y `DataInputError` si el
+        archivo está vacío, le falta alguna columna del contrato o trae un
+        valor que no se puede convertir al tipo esperado.
+        """
         if not source.exists():
             raise InputFileNotFoundError(source)
 
-        with source.open("r", encoding="utf-8", newline="") as fh:
-            reader = csv.DictReader(fh)
-            return [_from_payload(record) for record in reader]
+        try:
+            # dtype=str + keep_default_na=False: todo se lee como texto plano,
+            # sin que pandas adivine tipos ni convierta celdas vacías a NaN;
+            # la conversión real a int/float/date la hace `_from_payload`.
+            frame = pd.read_csv(source, dtype=str, keep_default_na=False)
+        except pd.errors.EmptyDataError as exc:
+            raise DataInputError(f"El CSV de KPIs está vacío: {source}") from exc
+
+        missing_columns = [name for name in _FIELDNAMES if name not in frame.columns]
+        if missing_columns:
+            raise DataInputError(
+                f"Falta(n) columna(s) del contrato en el CSV de KPIs: {missing_columns}"
+            )
+
+        records: list[dict[str, str]] = frame[list(_FIELDNAMES)].to_dict(orient="records")
+        return [_from_payload(record) for record in records]
 
 
 def _to_payload(row: KpiRow) -> dict[str, str]:
@@ -62,11 +82,8 @@ def _to_payload(row: KpiRow) -> dict[str, str]:
 
 
 def _from_payload(record: dict[str, str]) -> KpiRow:
-    # record.get(...) is None cubre tanto la columna ausente del encabezado
-    # como una fila con menos valores que columnas (DictReader la rellena con None).
-    missing = [field for field in _FIELDNAMES if record.get(field) is None]
-    if missing:
-        raise DataInputError(f"Falta(n) columna(s) del contrato en el CSV de KPIs: {missing}")
+    # `read()` ya garantiza que todas las columnas de _FIELDNAMES existen antes
+    # de llegar aquí; lo único que puede fallar por fila es un valor inválido.
     try:
         return KpiRow(
             date_utc=date.fromisoformat(record["date_utc"]),

@@ -6,7 +6,7 @@ from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 
-from teamcore_http_kpi.domain.errors import InputFileNotFoundError
+from teamcore_http_kpi.domain.errors import InputFileNotFoundError, MalformedRecordError
 from teamcore_http_kpi.domain.models import BitacoraRecord
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,8 @@ class JsonlBitacoraRepository:
                 try:
                     yield _from_payload(stripped)
                 except (json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
-                    logger.warning("Línea %d inválida en %s: %s", line_number, source, exc)
+                    error = MalformedRecordError(line_number, str(exc))
+                    logger.warning("%s (archivo: %s)", error, source)
 
 
 def _to_payload(record: BitacoraRecord) -> dict[str, str | int | float]:

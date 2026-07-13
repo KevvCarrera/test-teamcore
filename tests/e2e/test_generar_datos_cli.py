@@ -5,6 +5,7 @@ docs/testing/test-strategy.md.
 """
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -50,6 +51,38 @@ def test_rerun_overwrites_instead_of_appending(tmp_out: Path) -> None:
     main(["--n_registros", "10", "--salida", str(destination), "--seed", "1"])
 
     assert len(destination.read_text(encoding="utf-8").splitlines()) == 10
+
+
+class _FrozenClock:
+    """Reemplaza a `datetime` dentro de `application.generate_data` en esta prueba.
+
+    La CLI no expone `--ref-utc` (el enunciado no lo pide), así que usa
+    `datetime.now(UTC)` internamente. Sin fijar el reloj, dos corridas
+    "iguales" pueden diferir en el último segundo de `timestamp_utc` si el
+    reloj real avanza entre una llamada y la otra — por eso la prueba de
+    idempotencia real necesita congelarlo (regla del proyecto: ninguna
+    prueba depende del reloj real).
+    """
+
+    @staticmethod
+    def now(tz: object = None) -> datetime:
+        return datetime(2026, 7, 9, 12, 0, 0, tzinfo=UTC)
+
+
+@pytest.mark.e2e
+def test_rerun_with_same_params_is_byte_identical(
+    tmp_out: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("teamcore_http_kpi.application.generate_data.datetime", _FrozenClock)
+    destination = tmp_out / "datos.jsonl"
+
+    main(["--n_registros", "40", "--salida", str(destination), "--seed", "5"])
+    first_run = destination.read_text(encoding="utf-8")
+
+    main(["--n_registros", "40", "--salida", str(destination), "--seed", "5"])
+    second_run = destination.read_text(encoding="utf-8")
+
+    assert first_run == second_run
 
 
 @pytest.mark.e2e

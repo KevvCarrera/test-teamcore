@@ -133,3 +133,36 @@ Los pasos y el job se probaron con Pentaho Data Integration 9.4.0.0-343.
 Otras versiones de PDI deberían abrir estos ficheros sin problema (el formato
 XML de `.ktr`/`.kjb` es estable entre versiones 8.x/9.x), pero no se probó
 contra otras versiones específicas.
+
+## Nota de handoff: el contrato del CSV de entrada
+
+Quien mantenga esta parte del ETL **no controla** `calcular_kpi.py` (vive en
+el lado Python del repositorio) — el punto de contacto entre ambos mundos es
+exclusivamente el CSV `kpi_por_endpoint_dia.csv`, cuyo esquema está congelado
+en [data-contracts.md § KPI CSV](../docs/contracts/data-contracts.md#kpi-csv-kpi_por_endpoint_diacsv)
+como **v1.0**. Lo que necesitas saber para operar/mantener `t_load_kpi.ktr`
+sin sorpresas:
+
+- **Columnas y orden exactos** (el paso *CSV Input* las lee por posición, no
+  solo por nombre): `date_utc, endpoint_base, requests_total, success_2xx,
+  client_4xx, server_5xx, parse_errors, avg_elapsed_ms, p90_elapsed_ms`.
+- **`date_utc` es String, no Fecha** — deliberado, ver la sección de arriba
+  ("Por qué `date_utc` no se tipifica como Fecha"). Si algún día cambias esta
+  transformación para tipificarlo como Fecha, vuelve a probar contra SQLite
+  real: el driver JDBC serializa Fecha como epoch-milisegundos, rompiendo el
+  contrato `date_utc TEXT`.
+- **El paso Filter Rows asume** `requests_total > 0` (siempre cierto por
+  construcción) y `p90_elapsed_ms >= avg_elapsed_ms` (cierto en el caso
+  general, pero **no** garantizado matemáticamente — ver
+  [data-contracts.md § Invariantes](../docs/contracts/data-contracts.md#invariantes-y-validaciones-aguas-abajo)).
+  Si el generador de datos cambia su distribución de latencias, revisa si
+  este filtro sigue descartando lo que debe.
+- **Si el lado Python cambia el esquema del CSV** (columnas nuevas, renombradas,
+  reordenadas, o tipos distintos), el contrato exige un ADR y un incremento de
+  versión mayor antes del cambio — eso es tu señal para revisar y volver a
+  probar `t_load_kpi.ktr` contra PDI real, no asumir que sigue funcionando.
+- **Antes de cualquier cambio a este `.ktr`/`.kjb`**, vuelve a ejecutarlo con
+  Pan.bat/Kitchen.bat reales (no te fíes solo de las 16 pruebas estructurales
+  de `tests/integration/test_etl_pdi_structure.py` — esas comprueban que el
+  XML tiene la forma correcta, no que Pentaho lo ejecuta sin errores; los 3
+  bugs de la Fase 8 solo aparecieron al ejecutar de verdad).

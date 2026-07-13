@@ -44,9 +44,22 @@ revisa y se corrige en el mismo cambio.
 9. **[08-etl-pdi-explicado.md](08-etl-pdi-explicado.md)** — la Fase 8: el
    ETL de Pentaho, probado con una instalación real, y tres problemas
    reales encontrados y corregidos en el proceso.
+10. **[09-verificacion-endurecimiento-explicado.md](09-verificacion-endurecimiento-explicado.md)** —
+    la Fase 9: se llenaron los huecos de pruebas que la matriz de
+    trazabilidad ya exigía (idempotencia real, logging, volumen, secretos
+    fuera de los logs); no se encontraron bugs, solo faltaba comprobación.
+11. **[10-cierre-final-explicado.md](10-cierre-final-explicado.md)** — la
+    Fase 10: cierre documental (README final, nota de traspaso del CSV para
+    PDI, trazabilidad 100 % verificada) y qué queda pendiente (una decisión
+    de versión, no una tarea técnica).
+12. **[11-validacion-y-correcciones-explicado.md](11-validacion-y-correcciones-explicado.md)** —
+    revisión final contra la lista de criterios del enunciado: dos problemas
+    reales encontrados y corregidos (el reporte no usaba `pandas` como pide
+    el enunciado; una "ficha de error" preparada pero no conectada), y una
+    guía nueva de pruebas paso a paso.
 
-Con esto, las cuatro partes del enunciado están documentadas de punta a
-punta. Los próximos documentos (si aplica) cubrirán el cierre del proyecto.
+Con esto, el proyecto completo está documentado, implementado y verificado
+de punta a punta.
 
 ## Qué NO vas a encontrar aquí
 

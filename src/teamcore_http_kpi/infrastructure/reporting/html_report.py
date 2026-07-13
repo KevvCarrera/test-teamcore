@@ -75,6 +75,10 @@ def _summarize_by_endpoint(rows: Sequence[KpiRow]) -> list[_EndpointSummary]:
         client_4xx = sum(r.client_4xx for r in group)
         server_5xx = sum(r.server_5xx for r in group)
         weighted_avg = sum(r.avg_elapsed_ms * r.requests_total for r in group) / total
+        # Igual que compute_global_metrics: para cuando llegamos aquí ya no hay
+        # latencias individuales por fecha, solo el p90 de cada día. Promediarlos
+        # ponderado por volumen es una aproximación razonable de resumen, no un
+        # percentil recalculado desde los datos crudos.
         weighted_p90 = sum(r.p90_elapsed_ms * r.requests_total for r in group) / total
         summaries.append(
             _EndpointSummary(

@@ -6,6 +6,41 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
 ## [No publicado]
 
 ### Añadido
+- **Validación puntual contra las "Indicaciones de desarrollo" y "Criterios de
+  Evaluación" del enunciado**, con auditoría documentada en
+  [docs/project-plan/validacion-criterios-enunciado.md](docs/project-plan/validacion-criterios-enunciado.md).
+  - `docs/testing/guia-de-pruebas-por-paso.md`: guía nueva que mapea, paso por
+    paso, cada sección del enunciado original (`spec/Test Tecnico.md`) a su
+    prueba automatizada y a su verificación manual con comandos reales.
+  - Comentarios ampliados en `infrastructure/http/tasks.py` (por qué se
+    re-serializa el XML, por qué el título de HTML cae a `<h1>` como
+    alternativa) y en `infrastructure/reporting/html_report.py` (por qué el
+    p90 del resumen por endpoint es una aproximación ponderada, no un
+    percentil recalculado).
+  - `docs/runbook/operations-runbook.md` corregido: ya no dice que el ETL de
+    PDI "no se ejecutó/validó" (desactualizado desde la Fase 8) y se corrigió
+    la sintaxis de `Kitchen.bat` en Windows (`-file=...`, no `/file:...`).
+  - README.md y `docs/no-tecnico/` actualizados en consecuencia.
+
+- **Fase 9 — Verificación y endurecimiento**: se cerró el hueco entre lo que la
+  matriz de trazabilidad ya exigía y lo que había prueba automatizada de verdad;
+  no hizo falta cambiar código de producción, el manejo de errores/logging ya
+  era correcto.
+  - Prueba de idempotencia real de `generar_datos.py` (mismos parámetros dos
+    veces ⇒ salida byte-idéntica), que complementa el test de sobrescritura de
+    la Fase 5.
+  - `tests/unit/test_logging.py` (NFR-10): siete pruebas sobre `setup_logging`
+    (destino `stderr`, nivel por defecto/configurable, formato `text`/`json`,
+    filtrado por nivel, no duplica *handlers* en llamadas repetidas).
+  - Prueba de que un escenario HTTP fallido nunca deja la contraseña de prueba
+    en el log (verificado en código, no solo por revisión).
+  - `tests/e2e/test_volume_smoke.py` (NFR-13): 100 000 registros de punta a
+    punta (`generar_datos` → `calcular_kpi`) en segundos (~5-6 s reales, límite
+    de la prueba en 30 s), con verificación de conteos exactos.
+  - RTM actualizada: 17/17 requisitos funcionales y 14/14 no funcionales
+    marcados como verificados (no solo implementados).
+  - `make check` en verde: 180 pruebas, cobertura global 99 %.
+
 - **Fase 8 — ETL con Pentaho/PDI (Parte 2)**: `etl_pdi/t_load_kpi.ktr` y
   `etl_pdi/j_daily_kpi.kjb`, **validados contra una instalación real de
   Pentaho Data Integration 9.4** (no solo redactados a mano).
@@ -164,6 +199,20 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   línea con `FR-xx`/`NFR-xx`). No cambia ninguna lógica ni comportamiento.
 
 ### Corregido
+- **`CsvKpiRepository.read()` no usaba `pandas`**, pese a que el enunciado lo
+  pide explícitamente para `generar_reporte.py` ("Utiliza pandas para cargar
+  el CSV"; "matplotlib y pandas son suficientes"). Ahora carga el CSV con
+  `pandas.read_csv`, preservando el mismo contrato de errores; se agregó una
+  prueba para el caso de archivo vacío (`pandas.errors.EmptyDataError`).
+- **`MalformedRecordError` estaba definida, documentada y probada, pero nunca
+  se lanzaba en producción** — `JsonlBitacoraRepository.read` manejaba las
+  líneas corruptas con excepciones genéricas en vez de este tipo de dominio.
+  Ahora se usa realmente; se eliminó además un chequeo de columnas duplicado
+  y ya inalcanzable en `csv_repository.py`.
+- **Prueba de idempotencia de `generar_datos.py` (agregada en la Fase 9) era
+  intermitente**: dependía del reloj real (`datetime.now(UTC)`) sin fijarlo,
+  violando la regla del proyecto de que ninguna prueba depende del reloj
+  real. Corregida fijando el reloj con `monkeypatch`.
 - **`CsvKpiRepository` no traducía columnas faltantes o valores inválidos a
   `DataInputError`** (dejaba propagar `KeyError`/`ValueError` crudos), algo
   que `SPEC-004` exige explícitamente para el reporte HTML. Corregido con
@@ -190,5 +239,5 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y
   enunciado ([ADR-0005](docs/adr/0005-configuration-and-secrets.md)).
 
 ### Pendiente
-- Fases 9–10: verificación/endurecimiento y cierre documental (ver
+- Fase 10: cierre documental y handoff (ver
   [roadmap-and-phases.md](docs/project-plan/roadmap-and-phases.md)).

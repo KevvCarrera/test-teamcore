@@ -61,6 +61,18 @@ mismo cambio.
 
 | Fase | FR cubiertos | NFR cubiertos |
 |---|---|---|
-| Especificación (actual) | 17/17 especificados | 14/14 especificados |
-| Implementación | 0/17 implementados | — |
-| Verificación | 0/17 verificados | — |
+| Especificación | 17/17 especificados | 14/14 especificados |
+| Implementación | 17/17 implementados | 14/14 implementados |
+| Verificación (Fase 9) | 17/17 verificados | 14/14 verificados |
+
+Verificado con `make check` (`ruff` 0 errores, `mypy --strict` 0 errores,
+`pytest -m "not network and not browser"`: 180 passed, cobertura global 99 %).
+FR-01…FR-13 verificados con pruebas automatizadas (unit/integration/e2e);
+FR-14…FR-17 verificados con pruebas estructurales **y** con ejecución real
+contra una instalación de Pentaho Data Integration 9.4 (ver
+[etl_pdi/README.md](../../etl_pdi/README.md) y Fase 8 en
+[roadmap-and-phases.md](../project-plan/roadmap-and-phases.md)). Las pruebas
+`@pytest.mark.network`/`@pytest.mark.browser` (contra `httpbin.org`/Chrome
+real) se ejecutaron manualmente al menos una vez por escenario, tal como
+documenta [test-strategy.md](../testing/test-strategy.md); quedan excluidas
+del set por defecto por depender de red/navegador.
